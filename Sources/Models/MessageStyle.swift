@@ -50,14 +50,25 @@ public enum MessageStyle {
     public enum TailStyle {
 
         case curved
+        /// The tailess version of TailStyle.curved (better aligns edge of bubble with curved tail bubble).
+        case curvedless
+        
         case pointedEdge
+        /// The tailess version of TailStyle.pointedEdge (better aligns edge of bubble with pointed edge tail
+        /// bubble).
+        case pointedEdgeLess
+        
 
         internal var imageNameSuffix: String {
             switch self {
             case .curved:
                 return "_tail_v2"
+            case .curvedless:
+                return "tail_v02";
             case .pointedEdge:
                 return "_tail_v1"
+            case .pointedEdgeLess:
+                return "tail_v01";
             }
         }
     }
