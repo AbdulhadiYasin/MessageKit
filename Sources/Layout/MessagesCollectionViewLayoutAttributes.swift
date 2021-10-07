@@ -60,6 +60,9 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
                                                    teaserFont: .preferredFont(forTextStyle: .caption2),
                                                    domainFont: .preferredFont(forTextStyle: .caption1))
     
+    public var messageTopLabelPosition: MessageLabelPosition = .outter;
+    public var messageBottomLabelPosition: MessageLabelPosition = .outter;
+    
     // MARK: - Methods
 
     open override func copy(with zone: NSZone? = nil) -> Any {
@@ -116,4 +119,15 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
             return false
         }
     }
+}
+
+
+@objc public enum MessageLabelPosition: Int {
+    
+    /// Place message label outside of message's bubble bounds.
+    case outter
+    /// Place message label within message's bubble bounds.
+    case inner
+    /// Place message label within message's bubble bounds and inline without message's body (if possible)
+    case inline
 }

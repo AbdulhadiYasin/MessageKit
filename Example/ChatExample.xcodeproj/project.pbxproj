@@ -11,6 +11,7 @@
 		032A15E225965E1100E00FE3 /* CameraInputBarAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A15E125965E1100E00FE3 /* CameraInputBarAccessoryView.swift */; };
 		13CCA04625793058005C19BB /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = 13CCA04525793058005C19BB /* MessageKit */; };
 		13CCA06325793E24005C19BB /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 13CCA06225793E24005C19BB /* Kingfisher */; };
+		18AD383E270F1AFB006DD89C /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = 18AD383D270F1AFB006DD89C /* MessageKit */; };
 		1C5433DD24C389C300A5383B /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5433DC24C389C300A5383B /* MessagesView.swift */; };
 		1C5433DF24C38DBF00A5383B /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C5433DE24C38DBF00A5383B /* SwiftUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		1C5433E224C3A33600A5383B /* SwiftUIExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5433E124C3A33600A5383B /* SwiftUIExampleView.swift */; };
@@ -125,6 +126,7 @@
 				13CCA06325793E24005C19BB /* Kingfisher in Frameworks */,
 				1C5433DF24C38DBF00A5383B /* SwiftUI.framework in Frameworks */,
 				13CCA04625793058005C19BB /* MessageKit in Frameworks */,
+				18AD383E270F1AFB006DD89C /* MessageKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,6 +341,7 @@
 			packageProductDependencies = (
 				13CCA04525793058005C19BB /* MessageKit */,
 				13CCA06225793E24005C19BB /* Kingfisher */,
+				18AD383D270F1AFB006DD89C /* MessageKit */,
 			);
 			productName = ChatExample;
 			productReference = 882B5E331CF7D4B900B6E160 /* ChatExample.app */;
@@ -418,6 +421,7 @@
 			mainGroup = 882B5E2A1CF7D4B900B6E160;
 			packageReferences = (
 				13CCA06125793E24005C19BB /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				18AD383C270F1AFB006DD89C /* XCRemoteSwiftPackageReference "MessageKit" */,
 			);
 			productRefGroup = 882B5E341CF7D4B900B6E160 /* Products */;
 			projectDirPath = "";
@@ -868,6 +872,14 @@
 				minimumVersion = 5.15.8;
 			};
 		};
+		18AD383C270F1AFB006DD89C /* XCRemoteSwiftPackageReference "MessageKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AbdulhadiYasin/MessageKit.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -883,6 +895,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 13CCA06125793E24005C19BB /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		18AD383D270F1AFB006DD89C /* MessageKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 18AD383C270F1AFB006DD89C /* XCRemoteSwiftPackageReference "MessageKit" */;
+			productName = MessageKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

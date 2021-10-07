@@ -285,6 +285,22 @@ open class MessagesCollectionViewFlowLayout: UICollectionViewFlowLayout {
     public func setMessageOutgoingMessageBottomLabelAlignment(_ newAlignment: LabelAlignment) {
         messageSizeCalculators().forEach { $0.outgoingMessageBottomLabelAlignment = newAlignment }
     }
+    
+    public func setMessageIncomingTopLabelPosition(_ newPosition: MessageLabelPosition){
+        messageSizeCalculators().forEach { $0.incomingMessageTopLabelPosition = newPosition }
+    }
+    
+    public func setMessageOutgoingTopLabelPosition(_ newPosition: MessageLabelPosition){
+        messageSizeCalculators().forEach { $0.outgoingMessageTopLabelPosition = newPosition }
+    }
+    
+    public func setMessageIncomingBottomLabelPosition(_ newPosition: MessageLabelPosition){
+        messageSizeCalculators().forEach { $0.incomingMessageBottomLabelPosition = newPosition }
+    }
+    
+    public func setMessageOutgoingBottomLabelPosition(_ newPosition: MessageLabelPosition){
+        messageSizeCalculators().forEach { $0.outgoingMessageBottomLabelPosition = newPosition }
+    }
 
     /// Set `incomingAccessoryViewSize` of all `MessageSizeCalculator`s
     public func setMessageIncomingAccessoryViewSize(_ newSize: CGSize) {
