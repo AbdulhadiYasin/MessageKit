@@ -94,6 +94,9 @@ open class MessageSizeCalculator: CellSizeCalculator {
 
         attributes.messageBottomLabelAlignment = messageBottomLabelAlignment(for: message)
         attributes.messageBottomLabelSize = messageBottomLabelSize(for: message, at: indexPath)
+        
+        attributes.messageTopLabelPosition = messageTopLabelPosition(for: message)
+        attributes.messageBottomLabelPosition = messageTopLabelPosition(for: message)
 
         attributes.accessoryViewSize = accessoryViewSize(for: message)
         attributes.accessoryViewPadding = accessoryViewPadding(for: message)
@@ -244,6 +247,18 @@ open class MessageSizeCalculator: CellSizeCalculator {
         let dataSource = messagesLayout.messagesDataSource
         let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
         return isFromCurrentSender ? outgoingMessageBottomLabelAlignment : incomingMessageBottomLabelAlignment
+    }
+    
+    open func messageTopLabelPosition(for message: MessageType) -> MessageLabelPosition {
+        let dataSource = messagesLayout.messagesDataSource
+        let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
+        return isFromCurrentSender ? outgoingMessageTopLabelPosition : incomingMessageTopLabelPosition
+    }
+    
+    open func messageBottomLabelPosition(for message: MessageType) -> MessageLabelPosition {
+        let dataSource = messagesLayout.messagesDataSource
+        let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
+        return isFromCurrentSender ? outgoingMessageBottomLabelPosition : incomingMessageBottomLabelPosition
     }
 
     // MARK: - Accessory View

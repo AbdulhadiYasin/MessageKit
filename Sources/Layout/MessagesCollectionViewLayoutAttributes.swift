@@ -88,6 +88,8 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
         copy.accessoryViewPadding = accessoryViewPadding
         copy.accessoryViewPosition = accessoryViewPosition
         copy.linkPreviewFonts = linkPreviewFonts
+        copy.messageTopLabelPosition = messageTopLabelPosition;
+        copy.messageBottomLabelPosition = messageBottomLabelPosition;
         return copy
         // swiftlint:enable force_cast
     }
@@ -115,6 +117,8 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
                 && attributes.accessoryViewPadding == accessoryViewPadding
                 && attributes.accessoryViewPosition == accessoryViewPosition
                 && attributes.linkPreviewFonts == linkPreviewFonts
+                && attributes.messageTopLabelPosition == messageTopLabelPosition
+                && attributes.messageBottomLabelPosition == messageBottomLabelPosition
         } else {
             return false
         }
