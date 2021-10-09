@@ -116,6 +116,9 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         showMessageTimestampOnSwipeLeft = true // default false
         
         messagesCollectionView.refreshControl = refreshControl
+        
+        let layout = messagesCollectionView.messagesCollectionViewFlowLayout
+        layout.setMessageIncomingTopLabelPosition(.inner);
     }
     
     func configureMessageInputBar() {

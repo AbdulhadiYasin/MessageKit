@@ -256,7 +256,12 @@ open class MessageContentCell: MessageCollectionViewCell {
                 let messageHeight = attributes.messageContainerSize.height + attributes.messageContainerPadding.vertical
                 origin.y = (attributes.size.height / 2) - (messageHeight / 2)
             } else {
-                origin.y = attributes.cellTopLabelSize.height + attributes.messageTopLabelSize.height + attributes.messageContainerPadding.top
+                switch attributes.messageTopLabelPosition {
+                case .inner:
+                    origin.y = attributes.cellTopLabelSize.height + attributes.messageContainerPadding.top
+                default:
+                    origin.y = attributes.cellTopLabelSize.height + attributes.messageTopLabelSize.height + attributes.messageContainerPadding.top
+                }
             }
         }
 

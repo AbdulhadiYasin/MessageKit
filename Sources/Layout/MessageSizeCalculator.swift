@@ -56,11 +56,11 @@ open class MessageSizeCalculator: CellSizeCalculator {
     public var incomingMessageBottomLabelAlignment = LabelAlignment(textAlignment: .left, textInsets: UIEdgeInsets(left: 42))
     public var outgoingMessageBottomLabelAlignment = LabelAlignment(textAlignment: .right, textInsets: UIEdgeInsets(right: 42))
     
-    public var incomingMessageTopLabelPosition = MessageLabelPosition.inner;
-    public var outgoingMessageTopLabelPosition = MessageLabelPosition.inner;
-    
-    public var incomingMessageBottomLabelPosition = MessageLabelPosition.inner;
-    public var outgoingMessageBottomLabelPosition = MessageLabelPosition.inner;
+    public var incomingMessageTopLabelPosition = MessageLabelPosition.outter;
+    public var outgoingMessageTopLabelPosition = MessageLabelPosition.outter;
+     
+    public var incomingMessageBottomLabelPosition = MessageLabelPosition.outter;
+    public var outgoingMessageBottomLabelPosition = MessageLabelPosition.outter;
 
     public var incomingAccessoryViewSize = CGSize.zero
     public var outgoingAccessoryViewSize = CGSize.zero
