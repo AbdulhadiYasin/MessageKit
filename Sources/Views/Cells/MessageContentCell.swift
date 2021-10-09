@@ -240,7 +240,8 @@ open class MessageContentCell: MessageCollectionViewCell {
     /// - attributes: The `MessagesCollectionViewLayoutAttributes` for the cell.
     open func layoutMessageContainerView(with attributes: MessagesCollectionViewLayoutAttributes) {
         var origin: CGPoint = .zero
-
+        var heightExtension: CGFloat = 0;
+        
         switch attributes.avatarPosition.vertical {
         case .messageBottom:
             origin.y = attributes.size.height - attributes.messageContainerPadding.bottom - attributes.cellBottomLabelSize.height - attributes.messageBottomLabelSize.height - attributes.messageContainerSize.height - attributes.messageContainerPadding.top
@@ -259,6 +260,7 @@ open class MessageContentCell: MessageCollectionViewCell {
                 switch attributes.messageTopLabelPosition {
                 case .inner:
                     origin.y = attributes.cellTopLabelSize.height + attributes.messageContainerPadding.top
+                    heightExtension += attributes.messageTopLabelSize.height;
                 default:
                     origin.y = attributes.cellTopLabelSize.height + attributes.messageTopLabelSize.height + attributes.messageContainerPadding.top
                 }
@@ -275,7 +277,8 @@ open class MessageContentCell: MessageCollectionViewCell {
             fatalError(MessageKitError.avatarPositionUnresolved)
         }
 
-        messageContainerView.frame = CGRect(origin: origin, size: attributes.messageContainerSize)
+        let size = CGSize(width: attributes.messageContainerSize.width, height: attributes.messageContainerSize.height + heightExtension);
+        messageContainerView.frame = CGRect(origin: origin, size: size)
     }
 
     /// Positions the cell's top label.
