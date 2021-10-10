@@ -49,9 +49,14 @@ open class TextMessageCell: MessageContentCell {
             
             switch attributes.messageTopLabelPosition {
             case .inner, .inline:
-                messageLabel.frame = messageContainerView.bounds.insetBy(dx: 0, dy: attributes.messageTopLabelSize.height)
+                var frame = messageContainerView.bounds;
+                frame.size.height -= attributes.messageTopLabelSize.height;
+                frame.origin.y = attributes.messageTopLabelSize.height
+                messageLabel.frame = frame;
+                break;
             default:
                 messageLabel.frame = messageContainerView.bounds
+                break;
             }
         }
     }
