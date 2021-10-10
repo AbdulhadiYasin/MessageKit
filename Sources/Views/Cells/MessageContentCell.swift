@@ -260,7 +260,7 @@ open class MessageContentCell: MessageCollectionViewCell {
                 origin.y = (attributes.size.height / 2) - (messageHeight / 2)
             } else {
                 switch attributes.messageTopLabelPosition {
-                case .inner, .inner:
+                case .inner, .inline:
                     origin.y = attributes.cellTopLabelSize.height + attributes.messageContainerPadding.top
                     heightExtension += attributes.messageTopLabelSize.height;
                     

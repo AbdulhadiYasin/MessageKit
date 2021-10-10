@@ -96,7 +96,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
         attributes.messageBottomLabelSize = messageBottomLabelSize(for: message, at: indexPath)
         
         attributes.messageTopLabelPosition = messageTopLabelPosition(for: message)
-        attributes.messageBottomLabelPosition = messageTopLabelPosition(for: message)
+        attributes.messageBottomLabelPosition = messageBottomLabelPosition(for: message)
 
         attributes.accessoryViewSize = accessoryViewSize(for: message)
         attributes.accessoryViewPadding = accessoryViewPadding(for: message)
