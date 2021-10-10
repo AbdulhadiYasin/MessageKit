@@ -99,6 +99,8 @@ open class MessageContentCell: MessageCollectionViewCell {
         contentView.addSubview(messageContainerView)
         contentView.addSubview(avatarView)
         contentView.addSubview(messageTimestampLabel)
+        
+        contentView.insertSubview(messageContainerView, belowSubview: messageTopLabel);
     }
 
     open override func prepareForReuse() {
@@ -258,9 +260,17 @@ open class MessageContentCell: MessageCollectionViewCell {
                 origin.y = (attributes.size.height / 2) - (messageHeight / 2)
             } else {
                 switch attributes.messageTopLabelPosition {
-                case .inner:
+                case .inner, .inner:
                     origin.y = attributes.cellTopLabelSize.height + attributes.messageContainerPadding.top
                     heightExtension += attributes.messageTopLabelSize.height;
+                    
+                    btmLblInr: switch attributes.messageBottomLabelPosition {
+                    case .inner, .inline:
+                        heightExtension += attributes.messageBottomLabelSize.height;
+                        break btmLblInr;
+                    default:
+                        break btmLblInr;
+                    }
                 default:
                     origin.y = attributes.cellTopLabelSize.height + attributes.messageTopLabelSize.height + attributes.messageContainerPadding.top
                 }
