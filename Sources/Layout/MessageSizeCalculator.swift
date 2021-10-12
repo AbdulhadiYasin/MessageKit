@@ -43,6 +43,9 @@ open class MessageSizeCalculator: CellSizeCalculator {
 
     public var incomingMessagePadding = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 30)
     public var outgoingMessagePadding = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 4)
+    
+    public var incomingMessageContainerInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    public var outgoingMessageContainerInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
     public var incomingCellTopLabelAlignment = LabelAlignment(textAlignment: .center, textInsets: .zero)
     public var outgoingCellTopLabelAlignment = LabelAlignment(textAlignment: .center, textInsets: .zero)
@@ -83,6 +86,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
         attributes.avatarLeadingTrailingPadding = avatarLeadingTrailingPadding
 
         attributes.messageContainerPadding = messageContainerPadding(for: message)
+        attributes.messageContainerInsets = messageContainerInsets(for: message)
         attributes.messageContainerSize = messageContainerSize(for: message)
         attributes.cellTopLabelSize = cellTopLabelSize(for: message, at: indexPath)
         attributes.cellTopLabelAlignment = cellTopLabelAlignment(for: message)
@@ -288,10 +292,17 @@ open class MessageSizeCalculator: CellSizeCalculator {
         let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
         return isFromCurrentSender ? outgoingMessagePadding : incomingMessagePadding
     }
+    
+    open func messageContainerInsets(for message: MessageType) -> UIEdgeInsets {
+        let dataSource = messagesLayout.messagesDataSource
+        let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
+        return isFromCurrentSender ? outgoingMessageContainerInsets : incomingMessageContainerInsets
+    }
 
     open func messageContainerSize(for message: MessageType) -> CGSize {
         // Returns .zero by default
-        return .zero
+        let insets = self.messageContainerInsets(for: message);
+        return CGSize(width: max(insets.left + insets.right, 0), height: max(0, insets.top + insets.bottom))
     }
 
     open func messageContainerMaxWidth(for message: MessageType) -> CGFloat {

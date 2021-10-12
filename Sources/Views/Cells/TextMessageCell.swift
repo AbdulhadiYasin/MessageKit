@@ -47,15 +47,17 @@ open class TextMessageCell: MessageContentCell {
             messageLabel.textInsets = attributes.messageLabelInsets
             messageLabel.messageLabelFont = attributes.messageLabelFont
             
+            let containerInsets = attributes.messageContainerInsets;
+            
             switch attributes.messageTopLabelPosition {
             case .inner, .inline:
-                var frame = messageContainerView.bounds;
+                var frame = messageContainerView.bounds.inset(by: containerInsets);
                 frame.size.height -= attributes.messageTopLabelSize.height;
                 frame.origin.y = attributes.messageTopLabelSize.height
                 messageLabel.frame = frame;
                 break;
             default:
-                messageLabel.frame = messageContainerView.bounds
+                messageLabel.frame = messageContainerView.bounds.inset(by: containerInsets)
                 break;
             }
         }
