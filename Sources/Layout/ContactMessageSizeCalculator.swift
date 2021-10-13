@@ -59,10 +59,13 @@ open class ContactMessageSizeCalculator: MessageSizeCalculator {
         messageContainerSize = labelSize(for: attributedText, considering: maxWidth)
         
         let messageInsets = contactLabelInsets(for: message)
-        messageContainerSize.width += messageInsets.horizontal
-        messageContainerSize.height += messageInsets.vertical
+        let containerInsets = messageContainerInsets(for: message)
         
-        return messageContainerSize
+        messageContainerSize.width += messageInsets.horizontal + containerInsets.horizontal
+        messageContainerSize.height += messageInsets.vertical + containerInsets.vertical
+        
+        let minSize = messageContainerMinSize(for: message, at: indexPath)
+        return boundingSize(messageContainerSize, minSize)
     }
     
     open override func configure(attributes: UICollectionViewLayoutAttributes) {
