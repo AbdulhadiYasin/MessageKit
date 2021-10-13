@@ -87,7 +87,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
 
         attributes.messageContainerPadding = messageContainerPadding(for: message)
         attributes.messageContainerInsets = messageContainerInsets(for: message)
-        attributes.messageContainerSize = messageContainerSize(for: message)
+        attributes.messageContainerSize = messageContainerSize(for: message, at: indexPath)
         attributes.cellTopLabelSize = cellTopLabelSize(for: message, at: indexPath)
         attributes.cellTopLabelAlignment = cellTopLabelAlignment(for: message)
         attributes.cellBottomLabelSize = cellBottomLabelSize(for: message, at: indexPath)
@@ -116,7 +116,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
 
     open func cellContentHeight(for message: MessageType, at indexPath: IndexPath) -> CGFloat {
 
-        let messageContainerHeight = messageContainerSize(for: message).height
+        let messageContainerHeight = messageContainerSize(for: message, at: indexPath).height
         let cellBottomLabelHeight = cellBottomLabelSize(for: message, at: indexPath).height
         let messageBottomLabelHeight = messageBottomLabelSize(for: message, at: indexPath).height
         let cellTopLabelHeight = cellTopLabelSize(for: message, at: indexPath).height
@@ -158,6 +158,40 @@ open class MessageSizeCalculator: CellSizeCalculator {
             let cellHeight = max(avatarHeight, totalLabelHeight)
             return max(cellHeight, accessoryViewHeight)
         }
+    }
+    
+    open func messageContainerMinSize(for message: MessageType, at indexPath: IndexPath) -> CGSize {
+        let dataSource = messagesLayout.messagesDataSource
+        
+        if messageTopLabelPosition(for: message).isInner || messageBottomLabelPosition(for: message).isInner {
+            let maxWidth = messageContainerMaxWidth(for: message);
+            var minWidth: CGFloat? = nil;
+            var minHeight: CGFloat = 0;
+            
+            if let tpLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath) {
+                let alignemt = netMessageTopLabelAlignment(for: message)
+                let tpLblSize = labelSize(for: tpLblTxt, considering: maxWidth).inset(by: alignemt.textInsets)
+                minWidth = minWidth != nil ? max(minWidth!, tpLblSize.width) : tpLblSize.width
+                
+                let height = messageTopLabelSize(for: message, at: indexPath).height
+                minHeight = height >= 0 ? height : tpLblSize.height
+            }
+            
+            if let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath) {
+                let alignemt = netMessageBottomLabelAlignment(for: message)
+                let btmLblSize = labelSize(for: btmLblTxt, considering: maxWidth).inset(by: alignemt.textInsets)
+                minWidth = minWidth != nil ? max(minWidth!, btmLblSize.width) : btmLblSize.width
+                
+                let height = messageBottomLabelSize(for: message, at: indexPath).height
+                minHeight += height >= 0 ? height : btmLblSize.height
+            }
+            
+            let containerInsets = messageContainerInsets(for: message)
+            return CGSize(width: minWidth ?? 0, height: minHeight).inset(by: containerInsets)
+        }
+        
+        let containerInsets = messageContainerInsets(for: message)
+        return CGSize(width: containerInsets.horizontal, height: containerInsets.vertical)
     }
 
     // MARK: - Avatar
@@ -209,6 +243,34 @@ open class MessageSizeCalculator: CellSizeCalculator {
     open func messageTopLabelAlignment(for message: MessageType) -> LabelAlignment {
         let dataSource = messagesLayout.messagesDataSource
         let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
+        
+        switch messageTopLabelPosition(for: message) {
+        case .inner, .inline:
+            let alignment = isFromCurrentSender ? outgoingMessageTopLabelAlignment : incomingMessageTopLabelAlignment
+            
+            let messagePadding = messageContainerPadding(for: message)
+            let accessoryWidth = accessoryViewSize(for: message).width
+            let accessoryPadding = accessoryViewPadding(for: message)
+            
+            let leftInset = avatarSize(for: message).width + avatarLeadingTrailingPadding + messagePadding.left
+            let rightInset = messagePadding.right + accessoryWidth + accessoryPadding.horizontal
+            
+            return .init(
+                textAlignment: alignment.textAlignment,
+                textInsets: .init(
+                    top: alignment.textInsets.top,
+                    bottom: alignment.textInsets.bottom,
+                    left: alignment.textInsets.left + leftInset,
+                    right: alignment.textInsets.right + rightInset)
+            )
+        default:
+            return isFromCurrentSender ? outgoingMessageTopLabelAlignment : incomingMessageTopLabelAlignment
+        }
+    }
+    
+    open func netMessageTopLabelAlignment(for message: MessageType) -> LabelAlignment {
+        let dataSource = messagesLayout.messagesDataSource
+        let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
         return isFromCurrentSender ? outgoingMessageTopLabelAlignment : incomingMessageTopLabelAlignment
     }
 
@@ -248,6 +310,34 @@ open class MessageSizeCalculator: CellSizeCalculator {
     }
 
     open func messageBottomLabelAlignment(for message: MessageType) -> LabelAlignment {
+        let dataSource = messagesLayout.messagesDataSource
+        let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
+        
+        switch messageBottomLabelPosition(for: message) {
+        case .inner, .inline:
+            let alignment = isFromCurrentSender ? outgoingMessageBottomLabelAlignment : incomingMessageBottomLabelAlignment
+            
+            let messagePadding = messageContainerPadding(for: message)
+            let accessoryWidth = accessoryViewSize(for: message).width
+            let accessoryPadding = accessoryViewPadding(for: message)
+            
+            let leftInset = avatarSize(for: message).width + avatarLeadingTrailingPadding + messagePadding.left
+            let rightInset = messagePadding.right + accessoryWidth + accessoryPadding.horizontal
+            
+            return .init(
+                textAlignment: alignment.textAlignment,
+                textInsets: .init(
+                    top: alignment.textInsets.top,
+                    bottom: alignment.textInsets.bottom,
+                    left: alignment.textInsets.left + leftInset,
+                    right: alignment.textInsets.right + rightInset)
+            )
+        default:
+            return isFromCurrentSender ? outgoingMessageBottomLabelAlignment : incomingMessageBottomLabelAlignment
+        }
+    }
+    
+    open func netMessageBottomLabelAlignment(for message: MessageType) -> LabelAlignment {
         let dataSource = messagesLayout.messagesDataSource
         let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
         return isFromCurrentSender ? outgoingMessageBottomLabelAlignment : incomingMessageBottomLabelAlignment
@@ -299,10 +389,9 @@ open class MessageSizeCalculator: CellSizeCalculator {
         return isFromCurrentSender ? outgoingMessageContainerInsets : incomingMessageContainerInsets
     }
 
-    open func messageContainerSize(for message: MessageType) -> CGSize {
+    open func messageContainerSize(for message: MessageType, at indexPath: IndexPath) -> CGSize {
         // Returns .zero by default
-        let insets = self.messageContainerInsets(for: message);
-        return CGSize(width: max(insets.left + insets.right, 0), height: max(0, insets.top + insets.bottom))
+        return messageContainerMinSize(for: message, at: indexPath)
     }
 
     open func messageContainerMaxWidth(for message: MessageType) -> CGFloat {
@@ -333,5 +422,12 @@ open class MessageSizeCalculator: CellSizeCalculator {
 fileprivate extension UIEdgeInsets {
     init(top: CGFloat = 0, bottom: CGFloat = 0, left: CGFloat = 0, right: CGFloat = 0) {
         self.init(top: top, left: left, bottom: bottom, right: right)
+    }
+}
+
+fileprivate extension CGSize {
+    
+    func inset(by insets: UIEdgeInsets) -> CGSize {
+        return CGSize(width: self.width + insets.horizontal, height: self.height + insets.vertical)
     }
 }

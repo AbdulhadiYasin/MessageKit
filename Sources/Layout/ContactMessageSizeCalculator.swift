@@ -43,7 +43,7 @@ open class ContactMessageSizeCalculator: MessageSizeCalculator {
         return maxWidth - textInsets.horizontal
     }
     
-    open override func messageContainerSize(for message: MessageType) -> CGSize {
+    open override func messageContainerSize(for message: MessageType, at indexPath: IndexPath) -> CGSize {
         let maxWidth = messageContainerMaxWidth(for: message)
         
         var messageContainerSize: CGSize

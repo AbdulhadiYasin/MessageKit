@@ -137,4 +137,8 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
     case inner
     /// Place message label within message's bubble bounds and inline without message's body (if possible)
     case inline
+    
+    public var isInner: Bool {
+        return self != .outter
+    }
 }

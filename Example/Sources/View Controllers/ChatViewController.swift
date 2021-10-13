@@ -122,13 +122,15 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         /*layout.setMessageIncomingMessageTopLabelAlignment(
             .init(textAlignment: .left, textInsets: UIEdgeInsets(top: 0, left: 48.5, bottom: 0, right: 0))
         )
-        layout.setMessageIncomingMessagePadding(.init(top: -20, left: 0, bottom: 0, right: 0));
-        
         
         layout.textMessageSizeCalculator.incomingMessageLabelInsets.top = 18;*/
         
+        
         layout.textMessageSizeCalculator.incomingMessageLabelInsets = .zero;
-        layout.setMessageIncomingMess
+        layout.setMessageIncomingMessageTopLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 49, bottom: 0, right: 0)))
+        
+        layout.setMessageIncomingMessagePadding(.init(top: -20, left: 4, bottom: 0, right: 30));
+        layout.setMessageIncomingContainerInsets(.init(top: 20, left: 18, bottom: 7, right: 14))
     }
     
     func configureMessageInputBar() {

@@ -341,10 +341,19 @@ open class MessageContentCell: MessageCollectionViewCell {
         messageBottomLabel.textAlignment = attributes.messageBottomLabelAlignment.textAlignment
         messageBottomLabel.textInsets = attributes.messageBottomLabelAlignment.textInsets
 
-        let y = messageContainerView.frame.maxY + attributes.messageContainerPadding.bottom
-        let origin = CGPoint(x: 0, y: y)
-
-        messageBottomLabel.frame = CGRect(origin: origin, size: attributes.messageBottomLabelSize)
+        switch attributes.messageTopLabelPosition {
+        case .inline, .inner:
+            let y = messageContainerView.frame.maxY - attributes.messageBottomLabelSize.height
+            let origin = CGPoint(x: 0, y: y)
+            
+            messageBottomLabel.frame = CGRect(origin: origin, size: attributes.messageTopLabelSize)
+            break;
+        default:
+            let y = messageContainerView.frame.maxY + attributes.messageContainerPadding.bottom
+            let origin = CGPoint(x: 0, y: y)
+            
+            messageBottomLabel.frame = CGRect(origin: origin, size: attributes.messageBottomLabelSize)
+        }
     }
 
     /// Positions the cell's accessory view.

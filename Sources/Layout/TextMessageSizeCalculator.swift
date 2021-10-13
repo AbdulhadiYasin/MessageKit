@@ -45,7 +45,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         return maxWidth - textInsets.horizontal - containerInsets.horizontal
     }
 
-    open override func messageContainerSize(for message: MessageType) -> CGSize {
+    open override func messageContainerSize(for message: MessageType, at indexPath: IndexPath) -> CGSize {
         let maxWidth = messageContainerMaxWidth(for: message)
 
         var messageContainerSize: CGSize
@@ -69,7 +69,8 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         messageContainerSize.width += messageInsets.horizontal + containerInsets.horizontal
         messageContainerSize.height += messageInsets.vertical + containerInsets.vertical
 
-        return messageContainerSize
+        let minSize = messageContainerMinSize(for: message, at: indexPath)
+        return boundingSize(messageContainerSize, minSize)
     }
 
     open override func configure(attributes: UICollectionViewLayoutAttributes) {
@@ -92,4 +93,8 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             break
         }
     }
+}
+
+func boundingSize(_ lhs: CGSize, _ rhs: CGSize) -> CGSize {
+    return CGSize(width: max(lhs.width, rhs.width), height: max(lhs.height, rhs.height))
 }
