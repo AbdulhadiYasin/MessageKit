@@ -401,6 +401,10 @@ open class MessageSizeCalculator: CellSizeCalculator {
         let accessoryPadding = accessoryViewPadding(for: message)
         return messagesLayout.itemWidth - avatarWidth - messagePadding.horizontal - accessoryWidth - accessoryPadding.horizontal - avatarLeadingTrailingPadding
     }
+    
+    open func grossMessageContainerMaxWidth(for message: MessageType) -> CGFloat {
+        return messageContainerMaxWidth(for: message)
+    }
 
     // MARK: - Helpers
 

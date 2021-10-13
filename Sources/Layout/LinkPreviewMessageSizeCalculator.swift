@@ -50,7 +50,8 @@ open class LinkPreviewMessageSizeCalculator: TextMessageSizeCalculator {
         switch message.kind {
         case .linkPreview:
             let maxWidth = super.messageContainerMaxWidth(for: message)
-            return max(maxWidth, (layout?.collectionView?.bounds.width ?? 0) * 0.75)
+            let _mx = grossMessageContainerMaxWidth(for: message)
+            return min(max(maxWidth, (layout?.collectionView?.bounds.width ?? 0) * 0.75), _mx)
         default:
             return super.messageContainerMaxWidth(for: message)
         }
