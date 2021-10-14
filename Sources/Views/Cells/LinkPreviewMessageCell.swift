@@ -30,13 +30,19 @@ open class LinkPreviewMessageCell: TextMessageCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         messageContainerView.addSubview(view)
 
+        let insets = UIEdgeInsets(
+            top: messageLabel.frame.minY,
+            left: messageLabel.frame.minX,
+            bottom: messageContainerView.bounds.height - messageLabel.frame.maxY,
+            right: messageContainerView.bounds.width - messageLabel.frame.maxX)
+        
         NSLayoutConstraint.activate([
             view.leadingAnchor.constraint(equalTo: messageContainerView.leadingAnchor,
-                                          constant: messageLabel.textInsets.left),
+                                          constant: messageLabel.textInsets.left + insets.left),
             view.trailingAnchor.constraint(equalTo: messageContainerView.trailingAnchor,
-                                           constant: messageLabel.textInsets.right * -1),
+                                           constant: messageLabel.textInsets.right * -1 - insets.right),
             view.bottomAnchor.constraint(equalTo: messageContainerView.bottomAnchor,
-                                         constant: messageLabel.textInsets.bottom * -1)
+                                         constant: messageLabel.textInsets.bottom * -1 - insets.bottom)
         ])
         return view
     }()
