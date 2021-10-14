@@ -395,15 +395,15 @@ open class MessageSizeCalculator: CellSizeCalculator {
     }
 
     open func messageContainerMaxWidth(for message: MessageType) -> CGFloat {
+        return grossMessageContainerMaxWidth(for: message)
+    }
+    
+    open func grossMessageContainerMaxWidth(for message: MessageType) -> CGFloat {
         let avatarWidth = avatarSize(for: message).width
         let messagePadding = messageContainerPadding(for: message)
         let accessoryWidth = accessoryViewSize(for: message).width
         let accessoryPadding = accessoryViewPadding(for: message)
         return messagesLayout.itemWidth - avatarWidth - messagePadding.horizontal - accessoryWidth - accessoryPadding.horizontal - avatarLeadingTrailingPadding
-    }
-    
-    open func grossMessageContainerMaxWidth(for message: MessageType) -> CGFloat {
-        return messageContainerMaxWidth(for: message)
     }
 
     // MARK: - Helpers
