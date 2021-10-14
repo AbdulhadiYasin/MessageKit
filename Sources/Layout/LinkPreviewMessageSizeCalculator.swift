@@ -63,7 +63,7 @@ open class LinkPreviewMessageSizeCalculator: TextMessageSizeCalculator {
         }
 
         var containerSize = super.messageContainerSize(for: message, at: indexPath)
-        containerSize.width = max(containerSize.width, messageContainerMaxWidth(for: message))
+        containerSize.width = min(containerSize.width, messageContainerMaxWidth(for: message))
 
         let labelInsets: UIEdgeInsets = messageLabelInsets(for: message)
 
