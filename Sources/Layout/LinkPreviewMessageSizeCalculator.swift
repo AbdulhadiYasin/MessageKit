@@ -65,7 +65,8 @@ open class LinkPreviewMessageSizeCalculator: TextMessageSizeCalculator {
         var containerSize = super.messageContainerSize(for: message, at: indexPath)
         containerSize.width = min(containerSize.width, messageContainerMaxWidth(for: message))
 
-        let labelInsets: UIEdgeInsets = messageLabelInsets(for: message)
+        let containerInsets = messageContainerInsets(for: message)
+        let labelInsets: UIEdgeInsets = messageLabelInsets(for: message).inset(by: containerInsets)
 
         let minHeight = containerSize.height + LinkPreviewMessageSizeCalculator.imageViewSize
         let previewMaxWidth = containerSize.width - (LinkPreviewMessageSizeCalculator.imageViewSize + LinkPreviewMessageSizeCalculator.imageViewMargin + labelInsets.horizontal)
@@ -99,5 +100,13 @@ private extension LinkPreviewMessageSizeCalculator {
         guard !attibutedString.string.isEmpty else { return }
         let size = labelSize(for: attibutedString, considering: maxWidth)
         containerSize.height += size.height
+    }
+}
+
+
+fileprivate extension UIEdgeInsets {
+    func inset(by insets: UIEdgeInsets) -> UIEdgeInsets {
+        return UIEdgeInsets(top: top + insets.top, left: left + insets.left,
+                            bottom: bottom + insets.bottom, right: right + insets.right)
     }
 }
