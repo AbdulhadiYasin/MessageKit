@@ -166,15 +166,15 @@ open class MessageSizeCalculator: CellSizeCalculator {
         if messageTopLabelPosition(for: message).isInner || messageBottomLabelPosition(for: message).isInner {
             let maxWidth = messageContainerMaxWidth(for: message);
             var minWidth: CGFloat? = nil;
-            var minHeight: CGFloat = 0;
+            //var minHeight: CGFloat = 0;
             
             if let tpLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath) {
                 let alignemt = netMessageTopLabelAlignment(for: message)
                 let tpLblSize = labelSize(for: tpLblTxt, considering: maxWidth).inset(by: alignemt.textInsets)
                 minWidth = minWidth != nil ? max(minWidth!, tpLblSize.width) : tpLblSize.width
                 
-                let height = messageTopLabelSize(for: message, at: indexPath).height
-                minHeight = height >= 0 ? height : tpLblSize.height
+                //let height = messageTopLabelSize(for: message, at: indexPath).height
+                //minHeight = height >= 0 ? height : tpLblSize.height
             }
             
             if let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath) {
@@ -182,12 +182,12 @@ open class MessageSizeCalculator: CellSizeCalculator {
                 let btmLblSize = labelSize(for: btmLblTxt, considering: maxWidth).inset(by: alignemt.textInsets)
                 minWidth = minWidth != nil ? max(minWidth!, btmLblSize.width) : btmLblSize.width
                 
-                let height = messageBottomLabelSize(for: message, at: indexPath).height
-                minHeight += height >= 0 ? height : btmLblSize.height
+                //let height = messageBottomLabelSize(for: message, at: indexPath).height
+                //minHeight += height >= 0 ? height : btmLblSize.height
             }
             
             let containerInsets = messageContainerInsets(for: message)
-            return CGSize(width: minWidth ?? 0, height: minHeight).inset(by: containerInsets)
+            return CGSize(width: minWidth ?? 0, height: 0).inset(by: containerInsets)
         }
         
         let containerInsets = messageContainerInsets(for: message)
