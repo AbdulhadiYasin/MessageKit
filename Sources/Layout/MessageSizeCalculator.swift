@@ -431,7 +431,8 @@ fileprivate extension UIEdgeInsets {
 
 fileprivate extension CGSize {
     
-    func inset(by insets: UIEdgeInsets) -> CGSize {
-        return CGSize(width: self.width + insets.horizontal, height: self.height + insets.vertical)
+    func inset(by insets: UIEdgeInsets, multiplier: CGFloat = 1) -> CGSize {
+        return CGSize(width: self.width + (insets.horizontal*multiplier),
+                      height: self.height + (insets.vertical*multiplier))
     }
 }

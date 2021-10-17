@@ -129,8 +129,8 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         layout.setMessageIncomingTopLabelPosition(.inner);
         layout.setMessageIncomingBottomLabelPosition(.inner);
         
-        layout.setMessageIncomingMessageTopLabelAlignment(.init(   textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 0)))
-        layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 0)))
+        layout.setMessageIncomingMessageTopLabelAlignment(.init(   textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
+        layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
         layout.textMessageSizeCalculator.incomingMessageLabelInsets = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 14)
         
