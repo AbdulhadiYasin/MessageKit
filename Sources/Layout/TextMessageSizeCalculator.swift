@@ -67,7 +67,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         let containerInsets = messageContainerInsets(for: message)
         
         messageContainerSize.width += messageInsets.horizontal + containerInsets.horizontal
-        messageContainerSize.height += messageInsets.vertical + containerInsets.horizontal;
+        messageContainerSize.height += messageInsets.vertical + containerInsets.vertical;
 
         let minSize = messageContainerMinSize(for: message, at: indexPath)
         return CGSize(width: max(minSize.width, messageContainerSize.width), height: minSize.height + messageContainerSize.height)

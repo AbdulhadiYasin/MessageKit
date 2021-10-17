@@ -127,18 +127,18 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         
         
         layout.setMessageIncomingTopLabelPosition(.inner);
-        layout.setMessageIncomingBottomLabelPosition(.inner);
+        //layout.setMessageIncomingBottomLabelPosition(.inner);
         
         layout.setMessageIncomingMessageTopLabelAlignment(.init(   textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
-        layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
+        //layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
 //        layout.textMessageSizeCalculator.incomingMessageLabelInsets = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 14)
         
 //        layout.setMessageIncomingMessagePadding(.init(top: -20, left: 4, bottom: -20, right: 30));
-//        layout.setMessageIncomingContainerInsets(.init(top: 0, left: 18, bottom: 0, right: 14));
+        layout.setMessageIncomingContainerInsets(.init(top: 40, left: 18, bottom: 0, right: 14));
         
         layout.messageSizeCalculators().forEach {
-            ($0 as? TextMessageSizeCalculator)?.incomingMessageLabelInsets = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 14)
+            ($0 as? TextMessageSizeCalculator)?.incomingMessageLabelInsets = UIEdgeInsets(top: 0, left: 18, bottom: 7, right: 14)
         }
     }
     
