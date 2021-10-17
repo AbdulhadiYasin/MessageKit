@@ -54,7 +54,7 @@ open class TextMessageCell: MessageContentCell {
                 
                 if attributes.messageTopLabelPosition.isInner {
                     frame.size.height -= attributes.messageTopLabelSize.height
-                    frame.origin.y = attributes.messageTopLabelSize.height
+                    frame.origin.y = attributes.messageTopLabelSize.height + containerInsets.top
                 } else {
                     frame.origin.y = containerInsets.top
                 }
