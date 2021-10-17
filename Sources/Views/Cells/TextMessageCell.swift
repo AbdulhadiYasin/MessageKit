@@ -49,16 +49,23 @@ open class TextMessageCell: MessageContentCell {
             
             let containerInsets = attributes.messageContainerInsets;
             
-            switch attributes.messageTopLabelPosition {
-            case .inner, .inline:
-                var frame = messageContainerView.bounds.inset(by: containerInsets);
-                frame.size.height -= attributes.messageTopLabelSize.height;
-                frame.origin.y = attributes.messageTopLabelSize.height
+            if attributes.messageTopLabelPosition.isInner || attributes.messageBottomLabelPosition.isInner {
+                var frame = messageContainerView.bounds.inset(by: containerInsets)
+                
+                if attributes.messageTopLabelPosition.isInner {
+                    frame.size.height -= attributes.messageTopLabelSize.height
+                    frame.origin.y = attributes.messageTopLabelSize.height
+                } else {
+                    frame.origin.y = containerInsets.top
+                }
+                
+                if attributes.messageBottomLabelPosition.isInner {
+                    frame.size.height -= attributes.messageBottomLabelSize.height
+                }
+                
                 messageLabel.frame = frame;
-                break;
-            default:
+            } else {
                 messageLabel.frame = messageContainerView.bounds.inset(by: containerInsets)
-                break;
             }
         }
     }
