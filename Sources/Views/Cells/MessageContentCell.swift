@@ -341,7 +341,7 @@ open class MessageContentCell: MessageCollectionViewCell {
         messageBottomLabel.textAlignment = attributes.messageBottomLabelAlignment.textAlignment
         messageBottomLabel.textInsets = attributes.messageBottomLabelAlignment.textInsets
 
-        switch attributes.messageTopLabelPosition {
+        switch attributes.messageBottomLabelPosition {
         case .inline, .inner:
             let y = messageContainerView.frame.maxY - attributes.messageBottomLabelSize.height
             let origin = CGPoint(x: 0, y: y)
