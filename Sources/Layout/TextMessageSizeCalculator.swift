@@ -70,7 +70,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         messageContainerSize.height += messageInsets.vertical + containerInsets.vertical;
 
         let minSize = messageContainerMinSize(for: message, at: indexPath)
-        return CGSize(width: max(minSize.width, messageContainerSize.width), height: minSize.height + messageContainerSize.height)
+        return CGSize(width: max(minSize.width, messageContainerSize.width), height: messageContainerSize.height)
     }
 
     open override func configure(attributes: UICollectionViewLayoutAttributes) {
