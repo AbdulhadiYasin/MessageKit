@@ -119,11 +119,11 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         
         let layout = messagesCollectionView.messagesCollectionViewFlowLayout
         
-        layout.setMessageIncomingTopLabelPosition(.inner);
-        layout.setMessageIncomingMessageTopLabelAlignment(.init(   textAlignment: .right, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
+        layout.setMessageIncomingTopLabelPosition(.inline);
+        layout.setMessageIncomingMessageTopLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
-        //layout.setMessageIncomingBottomLabelPosition(.inner);
-        //layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
+        layout.setMessageIncomingBottomLabelPosition(.inline);
+        layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
         layout.messageSizeCalculators().forEach {
             ($0 as? TextMessageSizeCalculator)?.incomingMessageLabelInsets = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 14)

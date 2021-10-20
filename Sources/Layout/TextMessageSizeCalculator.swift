@@ -56,7 +56,10 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         case .attributedText(let text):
             attributedText = text
         case .text(let text), .emoji(let text):
-            attributedText = NSAttributedString(string: text, attributes: [.font: messageLabelFont])
+            attributedText = NSAttributedString(string: text, attributes: [
+                .font: messageLabelFont,
+                .paragraphStyle: paragraphStyle(for: message, at: indexPath)
+            ])
         default:
             fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
         }
@@ -71,6 +74,40 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
 
         let minSize = messageContainerMinSize(for: message, at: indexPath)
         return CGSize(width: max(minSize.width, messageContainerSize.width), height: messageContainerSize.height)
+    }
+    
+    private func paragraphStyle(for message: MessageType, at indexPath: IndexPath) -> NSParagraphStyle {
+        let pg = NSMutableParagraphStyle();
+        let dataSource = messagesLayout.messagesDataSource;
+        let maxWidth = messageContainerMaxWidth(for: message);
+        
+        if messageBottomLabelPosition(for: message) == .inline {
+            let alignment = self.netMessageBottomLabelAlignment(for: message);
+            switch alignment.textAlignment {
+            case .right:
+                if let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath) {
+                    pg.tailIndent = labelSize(for: btmLblTxt, considering: maxWidth).width;
+                }
+                break;
+            default:
+                break;
+            }
+        }
+        
+        if messageTopLabelPosition(for: message) == .inline {
+            let alignment = self.netMessageTopLabelAlignment(for: message);
+            switch alignment.textAlignment {
+            case .left:
+                if let tpLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath) {
+                    pg.firstLineHeadIndent = labelSize(for: tpLblTxt, considering: maxWidth).width;
+                }
+                break;
+            default:
+                break;
+            }
+        }
+        
+        return pg;
     }
 
     open override func configure(attributes: UICollectionViewLayoutAttributes) {
