@@ -31,12 +31,13 @@ open class LocationMessageSizeCalculator: MessageSizeCalculator {
         switch message.kind {
         case .location(let item):
             let maxWidth = messageContainerMaxWidth(for: message)
+            let insets = messageContainerInsets(for: message)
             if maxWidth < item.size.width {
                 // Maintain the ratio if width is too great
                 let height = maxWidth * item.size.height / item.size.width
-                return CGSize(width: maxWidth, height: height)
+                return CGSize(width: maxWidth, height: height).inset(by: insets)
             }
-            return item.size
+            return item.size.inset(by: insets)
         default:
             fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
         }

@@ -412,11 +412,11 @@ open class MessageSizeCalculator: CellSizeCalculator {
         var insets: UIEdgeInsets = .zero;
         
         if attributes.messageTopLabelPosition.isInner {
-            insets.top = attributes.messageTopLabelSize.height;
+            insets.top = attributes.messageTopLabelSize.height + attributes.messageContainerInsets.top;
         }
         
         if attributes.messageBottomLabelPosition.isInner {
-            insets.bottom = attributes.messageBottomLabelSize.height;
+            insets.bottom = attributes.messageBottomLabelSize.height + attributes.messageContainerInsets.bottom;
         }
         
         return insets;
@@ -445,7 +445,7 @@ fileprivate extension UIEdgeInsets {
     }
 }
 
-fileprivate extension CGSize {
+internal extension CGSize {
     
     func inset(by insets: UIEdgeInsets, multiplier: CGFloat = 1) -> CGSize {
         return CGSize(width: self.width + (insets.horizontal*multiplier),

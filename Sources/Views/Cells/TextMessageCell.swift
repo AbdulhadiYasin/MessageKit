@@ -47,28 +47,10 @@ open class TextMessageCell: MessageContentCell {
             messageLabel.textInsets = attributes.messageLabelInsets
             messageLabel.messageLabelFont = attributes.messageLabelFont
             
-            let containerInsets = attributes.messageContainerInsets
             let safeArea = attributes.messageContainerSafeaAreaInsets
             
-            messageLabel.frame = messageContainerView.bounds.inset(by: containerInsets).inset(by: safeArea)
-            /*if attributes.messageTopLabelPosition.isInner || attributes.messageBottomLabelPosition.isInner {
-                var frame = messageContainerView.bounds.inset(by: containerInsets)
-                
-                if attributes.messageTopLabelPosition.isInner {
-                    frame.size.height -= attributes.messageTopLabelSize.height
-                    frame.origin.y = attributes.messageTopLabelSize.height + containerInsets.top
-                } else {
-                    frame.origin.y = containerInsets.top
-                }
-                
-                if attributes.messageBottomLabelPosition.isInner {
-                    frame.size.height -= attributes.messageBottomLabelSize.height
-                }
-                
-                messageLabel.frame = frame;
-            } else {
-                messageLabel.frame = messageContainerView.bounds.inset(by: containerInsets)
-            }*/
+            messageLabel.frame = messageContainerView.bounds.inset(by: safeArea)
+            //messageLabel.frame = messageContainerView.bounds
         }
     }
 
