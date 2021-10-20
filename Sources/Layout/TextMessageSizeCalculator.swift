@@ -95,6 +95,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             case .right:
                 if let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath) {
                     let attachment = NSTextAttachment()
+                    attachment.image = UIImage.messageKitImageWith(type: .play)
                     let lblSze = labelSize(for: btmLblTxt, considering: maxWidth);
                     attachment.bounds = CGRect(origin: .zero, size: lblSze)
                     attributedText.insert(NSAttributedString(attachment: attachment), at: attributedText.string.count)
@@ -111,6 +112,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             case .left:
                 if let tpLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath) {
                     let attachment = NSTextAttachment()
+                    attachment.image = UIImage.messageKitImageWith(type: .play)
                     let lblSze = labelSize(for: tpLblTxt, considering: maxWidth);
                     attachment.bounds = CGRect(origin: .zero, size: lblSze)
                     attributedText.insert(NSAttributedString(attachment: attachment), at: 0)
