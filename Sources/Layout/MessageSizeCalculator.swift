@@ -94,9 +94,9 @@ open class MessageSizeCalculator: CellSizeCalculator {
         attributes.messageTimeLabelSize = messageTimeLabelSize(for: message, at: indexPath)
         attributes.cellBottomLabelAlignment = cellBottomLabelAlignment(for: message)
         attributes.messageTopLabelSize = messageTopLabelSize(for: message, at: indexPath)
-        attributes.messageTopLabelAlignment = messageTopLabelAlignment(for: message)
+        attributes.messageTopLabelAlignment = messageTopLabelAlignment(for: message, attributes: attributes)
 
-        attributes.messageBottomLabelAlignment = messageBottomLabelAlignment(for: message)
+        attributes.messageBottomLabelAlignment = messageBottomLabelAlignment(for: message, attributes: attributes)
         attributes.messageBottomLabelSize = messageBottomLabelSize(for: message, at: indexPath)
         
         attributes.messageTopLabelPosition = messageTopLabelPosition(for: message)
@@ -242,7 +242,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
         return CGSize(width: messagesLayout.itemWidth, height: height)
     }
     
-    open func messageTopLabelAlignment(for message: MessageType) -> LabelAlignment {
+    open func messageTopLabelAlignment(for message: MessageType, attributes: MessagesCollectionViewLayoutAttributes) -> LabelAlignment {
         let dataSource = messagesLayout.messagesDataSource
         let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
         
@@ -255,7 +255,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
             let accessoryPadding = accessoryViewPadding(for: message)
             
             let leftInset = avatarSize(for: message).width + avatarLeadingTrailingPadding + messagePadding.left
-            let rightInset = messagePadding.right + accessoryWidth + accessoryPadding.horizontal
+            let rightInset = messagesLayout.itemWidth - leftInset - attributes.messageContainerSize.width
             
             return .init(
                 textAlignment: alignment.textAlignment,
@@ -311,7 +311,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
         return CGSize(width: messagesLayout.itemWidth, height: height)
     }
 
-    open func messageBottomLabelAlignment(for message: MessageType) -> LabelAlignment {
+    open func messageBottomLabelAlignment(for message: MessageType, attributes: MessagesCollectionViewLayoutAttributes) -> LabelAlignment {
         let dataSource = messagesLayout.messagesDataSource
         let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
         
@@ -324,7 +324,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
             let accessoryPadding = accessoryViewPadding(for: message)
             
             let leftInset = avatarSize(for: message).width + avatarLeadingTrailingPadding + messagePadding.left
-            let rightInset = messagePadding.right + accessoryWidth + accessoryPadding.horizontal
+            let rightInset = messagesLayout.itemWidth - leftInset - attributes.messageContainerSize.width
             
             return .init(
                 textAlignment: alignment.textAlignment,
