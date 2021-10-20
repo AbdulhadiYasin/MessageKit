@@ -49,9 +49,9 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         let maxWidth = messageContainerMaxWidth(for: message)
 
         var messageContainerSize: CGSize
-        let attributedText: NSAttributedString
+        let attributedText: NSAttributedString = attributedString(for: message, at: indexPath)
 
-        let textMessageKind = message.kind.textMessageKind
+        /*let textMessageKind = attributedString(for: message, at: indexPath) message.kind.textMessageKind
         switch textMessageKind {
         case .attributedText(let text):
             attributedText = text
@@ -59,7 +59,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             attributedText = NSAttributedString(string: text, attributes: [.font: messageLabelFont])
         default:
             fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
-        }
+        }*/
 
         messageContainerSize = labelSize(for: attributedText, considering: maxWidth)
 
@@ -86,7 +86,6 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
         }
         
-        let pg = NSMutableParagraphStyle();
         let dataSource = messagesLayout.messagesDataSource;
         let maxWidth = messageContainerMaxWidth(for: message);
         
