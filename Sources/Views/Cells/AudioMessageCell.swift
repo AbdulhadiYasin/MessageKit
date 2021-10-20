@@ -83,6 +83,12 @@ open class AudioMessageCell: MessageContentCell {
     open override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
         super.apply(layoutAttributes)
         if let attributes = layoutAttributes as? MessagesCollectionViewLayoutAttributes {
+            let safeArea = attributes.messageContainerSafeaAreaInsets;
+            
+            
+            for centerY in messageContainerView.constraints.filter({ $0.identifier == "centerY" }) {
+                centerY.constant = safeArea.top - safeArea.bottom
+            }
         }
     }
     open override func prepareForReuse() {
