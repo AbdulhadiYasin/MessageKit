@@ -35,6 +35,7 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
 
     public var messageContainerSize: CGSize = .zero
     public var messageContainerPadding: UIEdgeInsets = .zero
+    public var messageContainerSafeaAreaInsets: UIEdgeInsets = .zero
     public var messageLabelFont: UIFont = UIFont.preferredFont(forTextStyle: .body)
     public var messageLabelInsets: UIEdgeInsets = .zero
     public var messageContainerInsets: UIEdgeInsets = .zero;
@@ -75,6 +76,7 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
         copy.messageContainerSize = messageContainerSize
         copy.messageContainerPadding = messageContainerPadding
         copy.messageContainerInsets = messageContainerInsets
+        copy.messageContainerSafeaAreaInsets = messageContainerSafeaAreaInsets
         copy.messageLabelFont = messageLabelFont
         copy.messageLabelInsets = messageLabelInsets
         copy.cellTopLabelAlignment = cellTopLabelAlignment
@@ -105,6 +107,7 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
                 && attributes.messageContainerSize == messageContainerSize
                 && attributes.messageContainerPadding == messageContainerPadding
                 && attributes.messageContainerInsets == messageContainerInsets
+                && attributes.messageContainerSafeaAreaInsets == messageContainerSafeaAreaInsets
                 && attributes.messageLabelFont == messageLabelFont
                 && attributes.messageLabelInsets == messageLabelInsets
                 && attributes.cellTopLabelAlignment == cellTopLabelAlignment

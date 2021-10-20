@@ -47,9 +47,11 @@ open class TextMessageCell: MessageContentCell {
             messageLabel.textInsets = attributes.messageLabelInsets
             messageLabel.messageLabelFont = attributes.messageLabelFont
             
-            let containerInsets = attributes.messageContainerInsets;
+            let containerInsets = attributes.messageContainerInsets
+            let safeArea = attributes.messageContainerSafeaAreaInsets
             
-            if attributes.messageTopLabelPosition.isInner || attributes.messageBottomLabelPosition.isInner {
+            messageLabel.frame = messageContainerView.bounds.inset(by: containerInsets).inset(by: safeArea)
+            /*if attributes.messageTopLabelPosition.isInner || attributes.messageBottomLabelPosition.isInner {
                 var frame = messageContainerView.bounds.inset(by: containerInsets)
                 
                 if attributes.messageTopLabelPosition.isInner {
@@ -66,7 +68,7 @@ open class TextMessageCell: MessageContentCell {
                 messageLabel.frame = frame;
             } else {
                 messageLabel.frame = messageContainerView.bounds.inset(by: containerInsets)
-            }
+            }*/
         }
     }
 

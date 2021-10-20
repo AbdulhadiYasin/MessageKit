@@ -105,6 +105,8 @@ open class MessageSizeCalculator: CellSizeCalculator {
         attributes.accessoryViewSize = accessoryViewSize(for: message)
         attributes.accessoryViewPadding = accessoryViewPadding(for: message)
         attributes.accessoryViewPosition = accessoryViewPosition(for: message)
+        
+        attributes.messageContainerSafeaAreaInsets = calculateContainerSafeAreaInsets(attributes: attributes)
     }
 
     open override func sizeForItem(at indexPath: IndexPath) -> CGSize {
@@ -404,6 +406,20 @@ open class MessageSizeCalculator: CellSizeCalculator {
         let accessoryWidth = accessoryViewSize(for: message).width
         let accessoryPadding = accessoryViewPadding(for: message)
         return messagesLayout.itemWidth - avatarWidth - messagePadding.horizontal - accessoryWidth - accessoryPadding.horizontal - avatarLeadingTrailingPadding
+    }
+    
+    open func calculateContainerSafeAreaInsets(attributes: MessagesCollectionViewLayoutAttributes) -> UIEdgeInsets {
+        var insets: UIEdgeInsets = .zero;
+        
+        if attributes.messageTopLabelPosition.isInner {
+            insets.top = attributes.messageTopLabelSize.height;
+        }
+        
+        if attributes.messageBottomLabelPosition.isInner {
+            insets.bottom = attributes.messageBottomLabelSize.height;
+        }
+        
+        return insets;
     }
 
     // MARK: - Helpers
