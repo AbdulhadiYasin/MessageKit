@@ -56,10 +56,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         case .attributedText(let text):
             attributedText = text
         case .text(let text), .emoji(let text):
-            attributedText = NSAttributedString(string: text, attributes: [
-                .font: messageLabelFont,
-                .paragraphStyle: paragraphStyle(for: message, at: indexPath)
-            ])
+            attributedText = NSAttributedString(string: text, attributes: [.font: messageLabelFont])
         default:
             fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
         }
@@ -76,7 +73,19 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         return CGSize(width: max(minSize.width, messageContainerSize.width), height: messageContainerSize.height)
     }
     
-    private func paragraphStyle(for message: MessageType, at indexPath: IndexPath) -> NSParagraphStyle {
+    private func attributedString(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString {
+        let textMessageKind = message.kind.textMessageKind
+        var attributedText: NSMutableAttributedString
+        
+        switch textMessageKind {
+        case .attributedText(let text):
+            attributedText = NSMutableAttributedString(attributedString: text)
+        case .text(let text), .emoji(let text):
+            attributedText = NSAttributedString(string: text, attributes: [.font: messageLabelFont]) as! NSMutableAttributedString
+        default:
+            fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
+        }
+        
         let pg = NSMutableParagraphStyle();
         let dataSource = messagesLayout.messagesDataSource;
         let maxWidth = messageContainerMaxWidth(for: message);
@@ -86,7 +95,10 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             switch alignment.textAlignment {
             case .right:
                 if let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath) {
-                    pg.tailIndent = labelSize(for: btmLblTxt, considering: maxWidth).width;
+                    let attachment = NSTextAttachment()
+                    let lblSze = labelSize(for: btmLblTxt, considering: maxWidth);
+                    attachment.bounds = CGRect(origin: .zero, size: lblSze)
+                    attributedText.insert(NSAttributedString(attachment: attachment), at: attributedText.string.count)
                 }
                 break;
             default:
@@ -99,7 +111,10 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             switch alignment.textAlignment {
             case .left:
                 if let tpLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath) {
-                    pg.firstLineHeadIndent = labelSize(for: tpLblTxt, considering: maxWidth).width;
+                    let attachment = NSTextAttachment()
+                    let lblSze = labelSize(for: tpLblTxt, considering: maxWidth);
+                    attachment.bounds = CGRect(origin: .zero, size: lblSze)
+                    attributedText.insert(NSAttributedString(attachment: attachment), at: 0)
                 }
                 break;
             default:
@@ -107,7 +122,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             }
         }
         
-        return pg;
+        return attributedText;
     }
 
     open override func configure(attributes: UICollectionViewLayoutAttributes) {
