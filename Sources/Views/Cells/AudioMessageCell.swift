@@ -84,10 +84,8 @@ open class AudioMessageCell: MessageContentCell {
         super.apply(layoutAttributes)
         if let attributes = layoutAttributes as? MessagesCollectionViewLayoutAttributes {
             let safeArea = attributes.messageContainerSafeaAreaInsets;
-            
-            
             for centerY in messageContainerView.constraints.filter({ $0.identifier == "centerY" }) {
-                centerY.constant = safeArea.top - safeArea.bottom
+                centerY.constant = (safeArea.top - safeArea.bottom)*0.5
             }
         }
     }
