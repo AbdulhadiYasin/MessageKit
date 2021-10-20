@@ -81,7 +81,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         case .attributedText(let text):
             attributedText = NSMutableAttributedString(attributedString: text)
         case .text(let text), .emoji(let text):
-            attributedText = NSAttributedString(string: text, attributes: [.font: messageLabelFont]) as! NSMutableAttributedString
+            attributedText = NSMutableAttributedString(string: text, attributes: [.font: messageLabelFont])
         default:
             fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
         }
