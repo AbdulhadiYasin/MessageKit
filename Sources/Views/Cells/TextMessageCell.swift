@@ -120,8 +120,10 @@ open class TextMessageCell: MessageContentCell {
                 .foregroundColor: displayDelegate.textColor(for: message, at: indexPath, in: messagesCollectionView),
                 .font: messageLabel.messageLabelFont
             ])
+            break
         case .attributedText(let attText):
             attributedText = NSMutableAttributedString(attributedString: attText)
+            break
         default:
             return nil
         }
