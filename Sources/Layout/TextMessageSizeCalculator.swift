@@ -49,9 +49,9 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         let maxWidth = messageContainerMaxWidth(for: message)
 
         var messageContainerSize: CGSize
-        let attributedText: NSAttributedString = attributedString(for: message, at: indexPath)
+        let attributedText: NSAttributedString
 
-        /*let textMessageKind = attributedString(for: message, at: indexPath) message.kind.textMessageKind
+        let textMessageKind = message.kind.textMessageKind
         switch textMessageKind {
         case .attributedText(let text):
             attributedText = text
@@ -59,7 +59,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             attributedText = NSAttributedString(string: text, attributes: [.font: messageLabelFont])
         default:
             fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
-        }*/
+        }
 
         messageContainerSize = labelSize(for: attributedText, considering: maxWidth)
 
@@ -68,62 +68,16 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         
         messageContainerSize.width += messageInsets.horizontal + containerInsets.horizontal
         messageContainerSize.height += messageInsets.vertical + containerInsets.vertical;
+        
+        if messageTopLabelPosition(for: message) == .inline {
+            messageContainerSize.height -= messageTopLabelSize(for: message, at: indexPath).height
+        }
+        if messageBottomLabelPosition(for: message) == .inline {
+            messageContainerSize.height -= messageBottomLabelSize(for: message, at: indexPath).height
+        }
 
         let minSize = messageContainerMinSize(for: message, at: indexPath)
         return CGSize(width: max(minSize.width, messageContainerSize.width), height: messageContainerSize.height)
-    }
-    
-    private func attributedString(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString {
-        let textMessageKind = message.kind.textMessageKind
-        var attributedText: NSMutableAttributedString
-        
-        switch textMessageKind {
-        case .attributedText(let text):
-            attributedText = NSMutableAttributedString(attributedString: text)
-        case .text(let text), .emoji(let text):
-            attributedText = NSMutableAttributedString(string: text, attributes: [.font: messageLabelFont])
-        default:
-            fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
-        }
-        
-        let dataSource = messagesLayout.messagesDataSource;
-        let maxWidth = messageContainerMaxWidth(for: message);
-        
-        if messageBottomLabelPosition(for: message) == .inline {
-            let alignment = self.netMessageBottomLabelAlignment(for: message);
-            switch alignment.textAlignment {
-            case .right:
-                if let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath) {
-                    let attachment = NSTextAttachment()
-                    attachment.image = UIImage.messageKitImageWith(type: .play)
-                    let lblSze = labelSize(for: btmLblTxt, considering: maxWidth);
-                    attachment.bounds = CGRect(origin: .zero, size: lblSze)
-                    attributedText.insert(NSAttributedString(attachment: attachment), at: attributedText.string.count)
-                }
-                break;
-            default:
-                break;
-            }
-        }
-        
-        if messageTopLabelPosition(for: message) == .inline {
-            let alignment = self.netMessageTopLabelAlignment(for: message);
-            switch alignment.textAlignment {
-            case .left:
-                if let tpLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath) {
-                    let attachment = NSTextAttachment()
-                    attachment.image = UIImage.messageKitImageWith(type: .play)
-                    let lblSze = labelSize(for: tpLblTxt, considering: maxWidth);
-                    attachment.bounds = CGRect(origin: .zero, size: lblSze)
-                    attributedText.insert(NSAttributedString(attachment: attachment), at: 0)
-                }
-                break;
-            default:
-                break;
-            }
-        }
-        
-        return attributedText;
     }
 
     open override func configure(attributes: UICollectionViewLayoutAttributes) {

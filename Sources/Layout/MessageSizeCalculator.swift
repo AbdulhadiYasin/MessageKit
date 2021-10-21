@@ -272,6 +272,17 @@ open class MessageSizeCalculator: CellSizeCalculator {
         let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
         return isFromCurrentSender ? outgoingMessageTopLabelAlignment : incomingMessageTopLabelAlignment
     }
+    
+    open func netMessageTopLabelSize(for message: MessageType, at indexPath: IndexPath) -> CGSize {
+        let dataSource = messagesLayout.messagesDataSource
+        if let tpLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath) {
+            let maxWidth = messageContainerMaxWidth(for: message);
+            let alignemt = netMessageTopLabelAlignment(for: message)
+            return labelSize(for: tpLblTxt, considering: maxWidth).inset(by: alignemt.textInsets)
+        } else {
+            return messageTopLabelSize(for: message, at: indexPath);
+        }
+    }
 
     // MARK: - Message time label
 
@@ -337,6 +348,17 @@ open class MessageSizeCalculator: CellSizeCalculator {
         let dataSource = messagesLayout.messagesDataSource
         let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
         return isFromCurrentSender ? outgoingMessageBottomLabelAlignment : incomingMessageBottomLabelAlignment
+    }
+    
+    open func netMessageBottomLabelSize(for message: MessageType, at indexPath: IndexPath) -> CGSize {
+        let dataSource = messagesLayout.messagesDataSource
+        if let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath) {
+            let maxWidth = messageContainerMaxWidth(for: message);
+            let alignemt = netMessageBottomLabelAlignment(for: message)
+            return labelSize(for: btmLblTxt, considering: maxWidth).inset(by: alignemt.textInsets)
+        } else {
+            return messageBottomLabelSize(for: message, at: indexPath);
+        }
     }
     
     open func messageTopLabelPosition(for message: MessageType) -> MessageLabelPosition {
