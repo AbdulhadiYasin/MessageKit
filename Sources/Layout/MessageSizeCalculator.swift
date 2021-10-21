@@ -251,9 +251,6 @@ open class MessageSizeCalculator: CellSizeCalculator {
             let alignment = isFromCurrentSender ? outgoingMessageTopLabelAlignment : incomingMessageTopLabelAlignment
             
             let messagePadding = messageContainerPadding(for: message)
-            let accessoryWidth = accessoryViewSize(for: message).width
-            let accessoryPadding = accessoryViewPadding(for: message)
-            
             let leftInset = avatarSize(for: message).width + avatarLeadingTrailingPadding + messagePadding.left
             let rightInset = messagesLayout.itemWidth - leftInset - attributes.messageContainerSize.width
             
@@ -320,9 +317,6 @@ open class MessageSizeCalculator: CellSizeCalculator {
             let alignment = isFromCurrentSender ? outgoingMessageBottomLabelAlignment : incomingMessageBottomLabelAlignment
             
             let messagePadding = messageContainerPadding(for: message)
-            let accessoryWidth = accessoryViewSize(for: message).width
-            let accessoryPadding = accessoryViewPadding(for: message)
-            
             let leftInset = avatarSize(for: message).width + avatarLeadingTrailingPadding + messagePadding.left
             let rightInset = messagesLayout.itemWidth - leftInset - attributes.messageContainerSize.width
             

@@ -81,20 +81,68 @@ open class TextMessageCell: MessageContentCell {
                 messageLabel.setAttributes(attributes, detector: detector)
             }
             let textMessageKind = message.kind.textMessageKind
-            switch textMessageKind {
-            case .text(let text), .emoji(let text):
-                let textColor = displayDelegate.textColor(for: message, at: indexPath, in: messagesCollectionView)
-                messageLabel.text = text
-                messageLabel.textColor = textColor
-                if let font = messageLabel.messageLabelFont {
-                    messageLabel.font = font
-                }
-            case .attributedText(let text):
+            if let text = self.attributedText(for: message, at: indexPath, and: messagesCollectionView) {
                 messageLabel.attributedText = text
-            default:
-                break
+            } else {
+                switch textMessageKind {
+                case .text(let text), .emoji(let text):
+                    let textColor = displayDelegate.textColor(for: message, at: indexPath, in: messagesCollectionView)
+                    messageLabel.text = text
+                    messageLabel.textColor = textColor
+                    if let font = messageLabel.messageLabelFont {
+                        messageLabel.font = font
+                    }
+                case .attributedText(let text):
+                    messageLabel.attributedText = text
+                default:
+                    break
+                }
             }
         }
+    }
+    
+    private func attributedText(for message: MessageType, at indexPath: IndexPath, and messagesCollectionView: MessagesCollectionView) -> NSAttributedString? {
+        guard let dataSource = messagesCollectionView.messagesDataSource else {
+            fatalError(MessageKitError.nilMessagesDataSource)
+        }
+        
+        guard let sizeCalculator = messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? MessageSizeCalculator else {
+            return nil
+        }
+        
+        let attributedText: NSMutableAttributedString
+        switch message.kind {
+        case .text(let txt), .emoji(let txt):
+            guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate else {
+                fatalError(MessageKitError.nilMessagesDisplayDelegate)
+            }
+            attributedText = NSMutableAttributedString(string: txt, attributes: [
+                .foregroundColor: displayDelegate.textColor(for: message, at: indexPath, in: messagesCollectionView),
+                .font: messageLabel.messageLabelFont
+            ])
+        case .attributedText(let attText):
+            attributedText = NSMutableAttributedString(attributedString: attText)
+        default:
+            return nil
+        }
+        
+        let tpLblPstn = sizeCalculator.messageTopLabelPosition(for: message);
+        let btmLblPstn = sizeCalculator.messageBottomLabelPosition(for: message);
+        
+        if tpLblPstn == .inline
+            && messageTopLabel.textAlignment == .left
+            && messageLabel.textAlignment == messageTopLabel.textAlignment,
+           let tpLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath) {
+            
+            let alignment = sizeCalculator.netMessageTopLabelAlignment(for: message)
+            let sze = sizeCalculator.labelSize(for: tpLblTxt, considering: messageContainerView.bounds.width - alignment.textInsets.horizontal)
+            
+            let p = NSMutableParagraphStyle();
+            p.firstLineHeadIndent = sze.width
+            attributedText.addAttributes([.paragraphStyle: p], range: NSRange(location: 0, length: attributedText.string.count))
+        }
+        
+        return attributedText
     }
     
     /// Used to handle the cell's contentView's tap gesture.
