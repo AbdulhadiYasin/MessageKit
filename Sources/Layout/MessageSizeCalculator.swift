@@ -106,7 +106,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
         attributes.accessoryViewPadding = accessoryViewPadding(for: message)
         attributes.accessoryViewPosition = accessoryViewPosition(for: message)
         
-        attributes.messageContainerSafeaAreaInsets = calculateContainerSafeAreaInsets(attributes: attributes)
+        attributes.messageContainerSafeaAreaInsets = calculateContainerSafeAreaInsets(for: message, attributes: attributes)
     }
 
     open override func sizeForItem(at indexPath: IndexPath) -> CGSize {
@@ -285,6 +285,17 @@ open class MessageSizeCalculator: CellSizeCalculator {
             return messageTopLabelSize(for: message, at: indexPath);
         }
     }
+    
+    open func messageTopLabelPosition(for message: MessageType) -> MessageLabelPosition {
+        let dataSource = messagesLayout.messagesDataSource
+        let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
+        let pos = isFromCurrentSender ? outgoingMessageTopLabelPosition : incomingMessageTopLabelPosition
+        return pos == .inline && !canUseInlineMessageTopLabel(for: message) ? .inner : pos
+    }
+    
+    open func canUseInlineMessageTopLabel(for message: MessageType) -> Bool {
+        return true
+    }
 
     // MARK: - Message time label
 
@@ -365,16 +376,15 @@ open class MessageSizeCalculator: CellSizeCalculator {
         }
     }
     
-    open func messageTopLabelPosition(for message: MessageType) -> MessageLabelPosition {
-        let dataSource = messagesLayout.messagesDataSource
-        let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
-        return isFromCurrentSender ? outgoingMessageTopLabelPosition : incomingMessageTopLabelPosition
-    }
-    
     open func messageBottomLabelPosition(for message: MessageType) -> MessageLabelPosition {
         let dataSource = messagesLayout.messagesDataSource
         let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
-        return isFromCurrentSender ? outgoingMessageBottomLabelPosition : incomingMessageBottomLabelPosition
+        let pos = isFromCurrentSender ? outgoingMessageBottomLabelPosition : incomingMessageBottomLabelPosition
+        return pos == .inline && !canUseInlineMessageTopLabel(for: message) ? .inner : pos
+    }
+    
+    open func canUseInlineMessageBottomLabel(for message: MessageType) -> Bool {
+        return true
     }
 
     // MARK: - Accessory View
@@ -428,14 +438,14 @@ open class MessageSizeCalculator: CellSizeCalculator {
         return messagesLayout.itemWidth - avatarWidth - messagePadding.horizontal - accessoryWidth - accessoryPadding.horizontal - avatarLeadingTrailingPadding
     }
     
-    open func calculateContainerSafeAreaInsets(attributes: MessagesCollectionViewLayoutAttributes) -> UIEdgeInsets {
+    open func calculateContainerSafeAreaInsets(for message: MessageType, attributes: MessagesCollectionViewLayoutAttributes) -> UIEdgeInsets {
         var insets: UIEdgeInsets = .zero;
         
-        if attributes.messageTopLabelPosition.isInner {
+        if messageTopLabelPosition(for: message).isInner {
             insets.top = attributes.messageTopLabelSize.height + attributes.messageContainerInsets.top;
         }
         
-        if attributes.messageBottomLabelPosition.isInner {
+        if messageBottomLabelPosition(for: message).isInner {
             insets.bottom = attributes.messageBottomLabelSize.height + attributes.messageContainerInsets.bottom;
         }
         
@@ -471,4 +481,41 @@ internal extension CGSize {
         return CGSize(width: self.width + (insets.horizontal*multiplier),
                       height: self.height + (insets.vertical*multiplier))
     }
+}
+
+
+extension String {
+
+    /// Tells whether the string is of a right to left script or not.
+    var isRTL: Bool {
+        let cleanFile = self.replacingOccurrences(of: "\r", with: "\n")
+        var newLineIndices: Array<Int> = []
+
+        for (index, char) in cleanFile.enumerated() {
+            if char == "\n" {
+                newLineIndices.append(index)
+            }
+        }
+
+        newLineIndices.insert(-1, at: 0)
+        newLineIndices.append(cleanFile.count)
+
+        let tagschemes = NSArray(objects: NSLinguisticTagScheme.language)
+        let tagger = NSLinguisticTagger(tagSchemes: tagschemes as! [NSLinguisticTagScheme], options: 0)
+        tagger.string = cleanFile
+
+        for i in 0..<newLineIndices.count - 1 {
+            let language = tagger.tag(at: newLineIndices[i + 1] - 1, scheme: NSLinguisticTagScheme.language, tokenRange: nil, sentenceRange: nil)
+
+            let lg = String(describing: language)
+            if lg.range(of: "he") != nil || lg.range(of: "ar") != nil || lg.range(of: "fa") != nil {
+                return true
+            } else {
+                return false
+            }
+        }
+
+        return false
+    }
+    
 }

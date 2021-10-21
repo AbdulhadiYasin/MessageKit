@@ -79,6 +79,34 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         let minSize = messageContainerMinSize(for: message, at: indexPath)
         return CGSize(width: max(minSize.width, messageContainerSize.width), height: messageContainerSize.height)
     }
+    
+    open override func canUseInlineMessageTopLabel(for message: MessageType) -> Bool {
+        guard let string = text(for: message), !string.isEmpty else {
+            return super.canUseInlineMessageTopLabel(for: message)
+        }
+        
+        if string.isRTL {
+            return netMessageTopLabelAlignment(for: message).textAlignment == .right;
+        } else {
+            return netMessageTopLabelAlignment(for: message).textAlignment == .left;
+        }
+    }
+    
+    private func text(for message: MessageType) -> String? {
+        switch message.kind {
+        case .text(let text), .emoji(let text): return text;
+        case .attributedText(let text): return text.string;
+        case .linkPreview(let linkItem):
+            if let text = linkItem.text {
+                return text
+            } else if let attributedText = linkItem.attributedText {
+                return attributedText.string
+            }
+            return nil;
+        default:
+            return nil
+        }
+    }
 
     open override func configure(attributes: UICollectionViewLayoutAttributes) {
         super.configure(attributes: attributes)
