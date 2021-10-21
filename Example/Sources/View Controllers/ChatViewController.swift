@@ -126,7 +126,7 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
         layout.setMessageOutgoingTopLabelPosition(.inner);
-        layout.setMessageOutgoingMessageTopLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 14, bottom: 0, right: 0)))
+        layout.setMessageOutgoingMessageTopLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 0, bottom: 0, right: 0)))
         
         
         

@@ -34,5 +34,9 @@ internal extension UIEdgeInsets {
     var horizontal: CGFloat {
         return left + right
     }
+    
+    func flipHorizontally() -> UIEdgeInsets {
+        return UIEdgeInsets(top: top, left: right, bottom: bottom, right: left)
+    }
 
 }
