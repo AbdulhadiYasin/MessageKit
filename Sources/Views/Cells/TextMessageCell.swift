@@ -131,9 +131,7 @@ open class TextMessageCell: MessageContentCell {
         let tpLblPstn = sizeCalculator.messageTopLabelPosition(for: message);
         let btmLblPstn = sizeCalculator.messageBottomLabelPosition(for: message);
         
-        if tpLblPstn == .inline
-            && messageTopLabel.textAlignment == .left
-            && messageLabel.textAlignment == messageTopLabel.textAlignment,
+        if tpLblPstn == .inline && messageTopLabel.textAlignment == .left,
            let tpLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath) {
             
             let alignment = sizeCalculator.netMessageTopLabelAlignment(for: message)
