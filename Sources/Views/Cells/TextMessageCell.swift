@@ -117,15 +117,16 @@ open class TextMessageCell: MessageContentCell {
         }
         
         let attributedText: NSMutableAttributedString
-        switch message.kind {
+        switch message.kind.textMessageKind {
         case .text(let txt), .emoji(let txt):
             guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate else {
                 fatalError(MessageKitError.nilMessagesDisplayDelegate)
             }
-            attributedText = NSMutableAttributedString(string: txt, attributes: [
-                .foregroundColor: displayDelegate.textColor(for: message, at: indexPath, in: messagesCollectionView),
-                .font: messageLabel.messageLabelFont
-            ])
+            
+            var attributes = [NSAttributedString.Key: Any]()
+            attributes[.foregroundColor] = displayDelegate.textColor(for: message, at: indexPath, in: messagesCollectionView);
+            attributes[.font] = messageLabel.messageLabelFont;
+            attributedText = NSMutableAttributedString.init(string: txt, attributes: attributes)
             break
         case .attributedText(let attText):
             attributedText = NSMutableAttributedString(attributedString: attText)
