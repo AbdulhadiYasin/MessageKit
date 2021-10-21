@@ -259,8 +259,8 @@ open class MessageSizeCalculator: CellSizeCalculator {
                 textInsets: .init(
                     top: alignment.textInsets.top,
                     bottom: alignment.textInsets.bottom,
-                    left: alignment.textInsets.left + leftInset,
-                    right: alignment.textInsets.right + rightInset)
+                    left: alignment.textInsets.left + (isFromCurrentSender ? rightInset : leftInset),
+                    right: alignment.textInsets.right + (isFromCurrentSender ? leftInset : rightInset))
             )
         default:
             return isFromCurrentSender ? outgoingMessageTopLabelAlignment : incomingMessageTopLabelAlignment
@@ -336,8 +336,8 @@ open class MessageSizeCalculator: CellSizeCalculator {
                 textInsets: .init(
                     top: alignment.textInsets.top,
                     bottom: alignment.textInsets.bottom,
-                    left: alignment.textInsets.left + leftInset,
-                    right: alignment.textInsets.right + rightInset)
+                    left: alignment.textInsets.left + (isFromCurrentSender ? rightInset : leftInset),
+                    right: alignment.textInsets.right + (isFromCurrentSender ? leftInset : rightInset))
             )
         default:
             return isFromCurrentSender ? outgoingMessageBottomLabelAlignment : incomingMessageBottomLabelAlignment

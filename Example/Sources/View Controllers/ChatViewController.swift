@@ -120,14 +120,22 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         let layout = messagesCollectionView.messagesCollectionViewFlowLayout
         
         layout.setMessageIncomingTopLabelPosition(.inline);
-        layout.setMessageIncomingMessageTopLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
+        layout.setMessageIncomingMessageTopLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
         layout.setMessageIncomingBottomLabelPosition(.inner);
         layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
+        layout.setMessageOutgoingTopLabelPosition(.inner);
+        layout.setMessageOutgoingMessageTopLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 14, bottom: 0, right: 0)))
+        
+        
+        
         layout.messageSizeCalculators().forEach {
             ($0 as? TextMessageSizeCalculator)?.incomingMessageLabelInsets = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 14)
+            ($0 as? TextMessageSizeCalculator)?.outgoingMessageLabelInsets = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 18)
         }
+        
+        layout.linkPreviewMessageSizeCalculator.incomingMessageBottomLabelPosition = .inner;
     }
     
     func configureMessageInputBar() {
