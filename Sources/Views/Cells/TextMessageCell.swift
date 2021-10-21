@@ -138,7 +138,7 @@ open class TextMessageCell: MessageContentCell {
             let sze = sizeCalculator.labelSize(for: tpLblTxt, considering: messageContainerView.bounds.width - alignment.textInsets.horizontal)
             
             let p = NSMutableParagraphStyle();
-            p.firstLineHeadIndent = sze.width
+            p.firstLineHeadIndent = sze.width + alignment.textInsets.right
             attributedText.addAttributes([.paragraphStyle: p], range: NSRange(location: 0, length: attributedText.string.count))
         }
         
