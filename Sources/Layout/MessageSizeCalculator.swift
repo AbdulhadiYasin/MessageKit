@@ -485,37 +485,51 @@ internal extension CGSize {
 
 
 extension String {
+    
+    fileprivate static var rtlSciriptRanges = [
+        ["0590","05FF"], // Hebrew
+        ["0600","06FF"], // Arabic
+        ["07C0","07FF"], // NKo
+        ["0700","074F"], // Syriac
+        ["0780","07BF"], // Thaana
+        ["2D30","2D7F"] // Tifinagh
+    ]
+    
+    fileprivate static var nonDirectionalCharacters = "[\\s\n\0\\f\t\\v\'\"\\-0-9\\+\\?\\!\\W]"
+    
 
     /// Tells whether the string is of a right to left script or not.
     var isRTL: Bool {
-        let cleanFile = self.replacingOccurrences(of: "\r", with: "\n")
-        var newLineIndices: Array<Int> = []
-
-        for (index, char) in cleanFile.enumerated() {
-            if char == "\n" {
-                newLineIndices.append(index)
+        let txt = self.removingRegexMatches(pattern: String.nonDirectionalCharacters);
+        print("escaped text: \(txt)")
+        for char in txt {
+            for range in String.rtlSciriptRanges {
+                if char.isWithinUnicodeRange(from: UInt32(Int(range[0], radix: 16)!), to: UInt32(Int(range[1], radix: 16)!)) {
+                    return true;
+                }
             }
+            return false
         }
-
-        newLineIndices.insert(-1, at: 0)
-        newLineIndices.append(cleanFile.count)
-
-        let tagschemes = NSArray(objects: NSLinguisticTagScheme.language)
-        let tagger = NSLinguisticTagger(tagSchemes: tagschemes as! [NSLinguisticTagScheme], options: 0)
-        tagger.string = cleanFile
-
-        for i in 0..<newLineIndices.count - 1 {
-            let language = tagger.tag(at: newLineIndices[i + 1] - 1, scheme: NSLinguisticTagScheme.language, tokenRange: nil, sentenceRange: nil)
-
-            let lg = String(describing: language)
-            if lg.range(of: "he") != nil || lg.range(of: "ar") != nil || lg.range(of: "fa") != nil {
-                return true
-            } else {
-                return false
-            }
-        }
-
-        return false
+        return false;
     }
     
+    func removingRegexMatches(pattern: String, replaceWith: String = "") -> String {
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+            let range = NSRange(location: 0, length: count)
+            return regex.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: replaceWith)
+        } catch let err {
+            print("\(err)")
+            return self
+        }
+    }
+    
+}
+
+extension Character {
+    
+    func isWithinUnicodeRange(from: UInt32, to: UInt32) -> Bool {
+        guard let uni = self.unicodeScalars.first?.value else { return false; }
+        return from <= uni && uni <= to;
+    }
 }
