@@ -146,7 +146,7 @@ open class TextMessageCell: MessageContentCell {
             
             let font = self.messageTopLabel.font;
             let p = NSMutableParagraphStyle();
-            p.firstLineHeadIndent = sze.width + 12
+            p.firstLineHeadIndent = sze.width;
             attributedText.addAttributes([.paragraphStyle: p], range: NSRange(location: 0, length: attributedText.string.count))
         }
         
