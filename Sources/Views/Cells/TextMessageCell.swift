@@ -89,6 +89,7 @@ open class TextMessageCell: MessageContentCell {
             let textMessageKind = message.kind.textMessageKind
             if let text = self.attributedText(for: message, at: indexPath, and: messagesCollectionView) {
                 messageLabel.attributedText = text
+                messageLabel.textAlignment = text.string.isRTL ? .right : .left;
             } else {
                 switch textMessageKind {
                 case .text(let text), .emoji(let text):
