@@ -139,13 +139,11 @@ open class TextMessageCell: MessageContentCell {
         let tpLblPstn = sizeCalculator.messageTopLabelPosition(for: message);
         let btmLblPstn = sizeCalculator.messageBottomLabelPosition(for: message);
         
-        if tpLblPstn == .inline && messageTopLabel.textAlignment == .left,
-           let tpLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath) {
+        if tpLblPstn == .inline, let tpLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath) {
             
             let alignment = sizeCalculator.netMessageTopLabelAlignment(for: message)
             let sze = sizeCalculator.labelSize(for: tpLblTxt, considering: messageContainerView.bounds.width - alignment.textInsets.horizontal)
             
-            let font = self.messageTopLabel.font;
             let p = NSMutableParagraphStyle();
             p.firstLineHeadIndent = sze.width + 8;
             attributedText.addAttributes([.paragraphStyle: p], range: NSRange(location: 0, length: attributedText.string.count))
