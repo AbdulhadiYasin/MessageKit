@@ -144,8 +144,9 @@ open class TextMessageCell: MessageContentCell {
             let alignment = sizeCalculator.netMessageTopLabelAlignment(for: message)
             let sze = sizeCalculator.labelSize(for: tpLblTxt, considering: messageContainerView.bounds.width - alignment.textInsets.horizontal)
             
+            let font = self.messageTopLabel.font;
             let p = NSMutableParagraphStyle();
-            p.firstLineHeadIndent = sze.width + alignment.textInsets.right
+            p.firstLineHeadIndent = sze.width + 12
             attributedText.addAttributes([.paragraphStyle: p], range: NSRange(location: 0, length: attributedText.string.count))
         }
         
