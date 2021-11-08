@@ -148,7 +148,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             let textAlignment = netMessageTopLabelAlignment(for: message);
             let frame = topLblTxt.lastLineFrame(labelWidth: maxWidth - textAlignment.textInsets.horizontal)
             
-            attributedString.addFirstLineHeadIndent(textAlignment.textInsets.left + frame.maxX + spacing);
+            attributedString.addSpacing(width: textAlignment.textInsets.left + frame.maxX + spacing, at: 0);
         }
         
         if bottomLabel == .inline, let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath){
