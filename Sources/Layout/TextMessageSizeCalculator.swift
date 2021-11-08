@@ -68,7 +68,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         // and makes sense to the layout.
         attributedText = self.inlineMessageText(
             message: message, at: indexPath, attributedText: attributedText,
-            maxWidth: maxWidth, spacing: 8,
+            maxWidth: maxWidth, spacing: 0,
             topLabel: topLabelPosition, bottomLabel: bottomLabelPosition)
         
 
@@ -246,7 +246,7 @@ extension NSMutableAttributedString {
     
     func addSpacing(width: CGFloat, at index: Int, height: CGFloat = 0.0001){
         let image5Attachment = NSTextAttachment()
-        image5Attachment.image = UIImage(named: "")
+        image5Attachment.image = UIImage()
         image5Attachment.bounds = CGRect.init(x: 0, y: -5, width: width, height: height)
         // wrap the attachment in its own attributed string so we can append it
         let imageSpaceHorizontal = NSAttributedString(attachment: image5Attachment)
