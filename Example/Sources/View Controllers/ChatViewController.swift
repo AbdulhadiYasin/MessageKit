@@ -126,7 +126,7 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
         layout.setMessageOutgoingTopLabelPosition(.inline);
-        layout.setMessageOutgoingMessageTopLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 14, bottom: 0, right: 18)))
+        layout.setMessageOutgoingMessageTopLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 14, bottom: 0, right: 18)))
         
         layout.setMessageOutgoingBottomLabelPosition(.inner);
         layout.setMessageOutgoingMessageBottomLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 14, bottom: 0, right: 18)))
@@ -206,7 +206,7 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         let name = message.sender.displayName
         var font: UIFont? = nil;
         if let sizeCalc = messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? TextMessageSizeCalculator {
-            font = sizeCalc.messageLabelFont
+            font = UIFont.systemFont(ofSize: UIFont.buttonFontSize, weight: .medium)// sizeCalc.messageLabelFont
         }
         return NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: font ?? UIFont.preferredFont(forTextStyle: .caption1)])
     }

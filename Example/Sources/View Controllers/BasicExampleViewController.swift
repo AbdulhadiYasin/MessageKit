@@ -134,7 +134,21 @@ extension BasicExampleViewController: MessagesLayoutDelegate {
     }
     
     func messageTopLabelHeight(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGFloat {
-        return 20
+        guard let att = self.messageTopLabelAttributedText(for: message, at: indexPath) else {
+            return 0;
+        }
+        
+        let range = NSRange(location: 0, length: att.string.count);
+        var font: UIFont? = nil;
+        att.enumerateAttributes(in: range, options: []) { (attributes: [NSAttributedString.Key: Any], range: NSRange, stop: UnsafeMutablePointer<ObjCBool>) in
+            if let _font = attributes[.font] as? UIFont {
+                font = _font;
+                stop.pointee = true;
+            }
+        }
+        
+        guard let font = font else { return 0; }
+        return font.lineHeight;
     }
     
     func messageBottomLabelHeight(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGFloat {

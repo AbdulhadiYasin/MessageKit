@@ -48,12 +48,12 @@ open class TextMessageCell: MessageContentCell {
             messageLabel.messageLabelFont = attributes.messageLabelFont
             
             var safeArea = attributes.messageContainerSafeaAreaInsets
-            if attributes.messageTopLabelPosition == .inline {
-                safeArea.top -= attributes.messageTopLabelSize.height
-            }
-            if attributes.messageBottomLabelPosition == .inline {
-                safeArea.bottom -= attributes.messageBottomLabelSize.height
-            }
+//            if attributes.messageTopLabelPosition == .inline {
+//                safeArea.top -= attributes.messageTopLabelSize.height
+//            }
+//            if attributes.messageBottomLabelPosition == .inline {
+//                safeArea.bottom -= attributes.messageBottomLabelSize.height
+//            }
             
             messageLabel.frame = messageContainerView.bounds.inset(by: safeArea)
             //messageLabel.frame = messageContainerView.bounds
@@ -91,6 +91,7 @@ open class TextMessageCell: MessageContentCell {
                 messageLabel.attributedText = text
                 messageLabel.textAlignment = text.string.isRTL ? .right : .left;
             } else {
+                messageLabel.textAlignment = .left;
                 switch textMessageKind {
                 case .text(let text), .emoji(let text):
                     let textColor = displayDelegate.textColor(for: message, at: indexPath, in: messagesCollectionView)

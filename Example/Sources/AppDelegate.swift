@@ -29,24 +29,24 @@ final internal class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-        let masterViewController = NavigationController(rootViewController: LaunchViewController())
-        let detailViewController = NavigationController()
-        let splitViewController = UISplitViewController()
-        splitViewController.viewControllers = [masterViewController, detailViewController]
-        splitViewController.preferredDisplayMode = .allVisible
-        
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = splitViewController
-        window?.makeKeyAndVisible()
-        
-        if UserDefaults.isFirstLaunch() {
-            // Enable Text Messages
-            UserDefaults.standard.set(true, forKey: "Text Messages")
+            let masterViewController = NavigationController(rootViewController: LaunchViewController())
+            let detailViewController = NavigationController()
+            let splitViewController = UISplitViewController()
+            splitViewController.viewControllers = [masterViewController, detailViewController]
+            splitViewController.preferredDisplayMode = .allVisible
+            
+            window = UIWindow(frame: UIScreen.main.bounds)
+            window?.rootViewController = splitViewController
+            window?.makeKeyAndVisible()
+            
+            if UserDefaults.isFirstLaunch() {
+                // Enable Text Messages
+                UserDefaults.standard.set(true, forKey: "Text Messages")
+            }
+            
+            return true
         }
-        
-        return true
-    }
 
 }

@@ -49,7 +49,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         let maxWidth = messageContainerMaxWidth(for: message)
 
         var messageContainerSize: CGSize
-        let attributedText: NSAttributedString
+        var attributedText: NSAttributedString
 
         let textMessageKind = message.kind.textMessageKind
         switch textMessageKind {
@@ -60,6 +60,17 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         default:
             fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
         }
+        
+        let topLabelPosition = messageTopLabelPosition(for: message);
+        let bottomLabelPosition = messageBottomLabelPosition(for: message);
+        
+        // When top/bottom labels possition is inline we can assume that it's legal
+        // and makes sense to the layout.
+        attributedText = self.inlineMessageText(
+            message: message, at: indexPath, attributedText: attributedText,
+            maxWidth: maxWidth, spacing: 8,
+            topLabel: topLabelPosition, bottomLabel: bottomLabelPosition)
+        
 
         messageContainerSize = labelSize(for: attributedText, considering: maxWidth)
 
@@ -69,10 +80,20 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         messageContainerSize.width += messageInsets.horizontal + containerInsets.horizontal
         messageContainerSize.height += messageInsets.vertical + containerInsets.vertical;
         
-        if messageTopLabelPosition(for: message) == .inline {
+        if topLabelPosition == .inline {
+            // #1.0. By default a space for the top label is reserved, but container's
+            // background streches underneath it to mimic thats it's contained
+            // within the message container itself.
+            //
+            // #1.1 to acheive an inline top label we will reduce this reserved height
+            // of the top label, strech the background underneath it and start
+            // message's content at the start of the top label but with a horizontal
+            // spacing to avoid overlapping.
             messageContainerSize.height -= messageTopLabelSize(for: message, at: indexPath).height
         }
-        if messageBottomLabelPosition(for: message) == .inline {
+        
+        if bottomLabelPosition == .inline {
+            // #2.0. Look at comment #1.0.
             messageContainerSize.height -= messageBottomLabelSize(for: message, at: indexPath).height
         }
 
@@ -85,11 +106,15 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             return super.canUseInlineMessageTopLabel(for: message)
         }
         
-        if string.isRTL {
-            return netMessageTopLabelAlignment(for: message).textAlignment == .right;
-        } else {
-            return netMessageTopLabelAlignment(for: message).textAlignment == .left;
+        return netMessageTopLabelAlignment(for: message).textAlignment == (string.isRTL ? .right : .left);
+    }
+    
+    open override func canUseInlineMessageBottomLabel(for message: MessageType) -> Bool {
+        guard let string = text(for: message), !string.isEmpty else {
+            return super.canUseInlineMessageBottomLabel(for: message)
         }
+        
+        return netMessageTopLabelAlignment(for: message).textAlignment == (string.isRTL ? .left : .right);
     }
     
     private func text(for message: MessageType) -> String? {
@@ -107,6 +132,39 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             return nil
         }
     }
+    
+    private func inlineMessageText(
+        message: MessageType, at indexPath: IndexPath, attributedText: NSAttributedString, maxWidth: CGFloat, spacing: CGFloat = 8.0,
+        topLabel: MessageLabelPosition, bottomLabel: MessageLabelPosition) -> NSAttributedString{
+        guard topLabel == .inline || bottomLabel == .inline else { return attributedText; }
+        
+        let attributedString = NSMutableAttributedString(attributedString: attributedText);
+        
+        let dataSource = messagesLayout.messagesDataSource;
+        if topLabel == .inline, let topLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath){
+            
+            // Calculate horizontal spacing needed to avoid overlapping with
+            // message's top label.
+            let textAlignment = netMessageTopLabelAlignment(for: message);
+            let frame = topLblTxt.lastLineFrame(labelWidth: maxWidth - textAlignment.textInsets.horizontal)
+            
+            attributedString.addFirstLineHeadIndent(textAlignment.textInsets.left + frame.maxX + spacing);
+        }
+        
+        if bottomLabel == .inline, let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath){
+            // Calculate horizontal spacing needed to avoid overlapping with
+            // message's bottom label.
+            let textAlignment = netMessageBottomLabelAlignment(for: message);
+            let frame = btmLblTxt.firstLineFrame(labelWidth: maxWidth - textAlignment.textInsets.horizontal)
+            
+            attributedString.addSpacing(width: frame.width, at: attributedString.length);
+        }
+        
+        return attributedString;
+    }
+    
+    
+    
 
     open override func configure(attributes: UICollectionViewLayoutAttributes) {
         super.configure(attributes: attributes)
@@ -132,4 +190,67 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
 
 func boundingSize(_ lhs: CGSize, _ rhs: CGSize) -> CGSize {
     return CGSize(width: max(lhs.width, rhs.width), height: max(lhs.height, rhs.height))
+}
+
+
+extension NSAttributedString {
+
+    func lineFragmentUsedRect(at index: Int, labelWidth: CGFloat) -> CGRect {
+        guard index >= 0 && index <= self.length else {
+            return .zero;
+        }
+        
+        // Create instances of NSLayoutManager, NSTextContainer and NSTextStorage
+        let labelSize = CGSize(width: labelWidth, height: .infinity)
+        let layoutManager = NSLayoutManager()
+        let textContainer = NSTextContainer(size: labelSize)
+        let textStorage = NSTextStorage(attributedString: self)
+
+        // Configure layoutManager and textStorage
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+
+        // Configure textContainer
+        textContainer.lineFragmentPadding = 0.0
+        textContainer.lineBreakMode = .byWordWrapping
+        textContainer.maximumNumberOfLines = 0
+
+        let glyphIndex = layoutManager.glyphIndexForCharacter(at: index)
+        let lineFragmentRect = layoutManager.lineFragmentUsedRect(forGlyphAt: glyphIndex,
+                                                                      effectiveRange: nil)
+        
+        return lineFragmentRect
+    }
+    
+    func lastLineFrame(labelWidth: CGFloat) -> CGRect {
+        return self.lineFragmentUsedRect(at: self.length - 1, labelWidth: labelWidth)
+    }
+    
+    func lastLineMaxX(labelWidth: CGFloat) -> CGFloat {
+        return self.lastLineFrame(labelWidth: labelWidth).maxX
+    }
+    
+    func firstLineFrame(labelWidth: CGFloat) -> CGRect {
+        return self.lineFragmentUsedRect(at: 0, labelWidth: labelWidth);
+    }
+}
+
+extension NSMutableAttributedString {
+    
+    func addFirstLineHeadIndent(_ width: CGFloat){
+        let p = NSMutableParagraphStyle();
+        p.firstLineHeadIndent = width;
+        
+        addAttributes([.paragraphStyle: p], range: NSRange(location: 0, length: string.count))
+    }
+    
+    func addSpacing(width: CGFloat, at index: Int, height: CGFloat = 0.0001){
+        let image5Attachment = NSTextAttachment()
+        image5Attachment.image = UIImage(named: "")
+        image5Attachment.bounds = CGRect.init(x: 0, y: -5, width: width, height: height)
+        // wrap the attachment in its own attributed string so we can append it
+        let imageSpaceHorizontal = NSAttributedString(attachment: image5Attachment)
+        
+        self.insert(imageSpaceHorizontal, at: index);
+    }
 }

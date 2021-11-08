@@ -93,6 +93,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
         attributes.cellBottomLabelSize = cellBottomLabelSize(for: message, at: indexPath)
         attributes.messageTimeLabelSize = messageTimeLabelSize(for: message, at: indexPath)
         attributes.cellBottomLabelAlignment = cellBottomLabelAlignment(for: message)
+        
         attributes.messageTopLabelSize = messageTopLabelSize(for: message, at: indexPath)
         attributes.messageTopLabelAlignment = messageTopLabelAlignment(for: message, attributes: attributes)
 
@@ -106,7 +107,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
         attributes.accessoryViewPadding = accessoryViewPadding(for: message)
         attributes.accessoryViewPosition = accessoryViewPosition(for: message)
         
-        attributes.messageContainerSafeaAreaInsets = calculateContainerSafeAreaInsets(for: message, attributes: attributes)
+        attributes.messageContainerSafeaAreaInsets = calculateContainerSafeAreaInsets(for: message, at: indexPath)
     }
 
     open override func sizeForItem(at indexPath: IndexPath) -> CGSize {
@@ -294,7 +295,27 @@ open class MessageSizeCalculator: CellSizeCalculator {
     }
     
     open func canUseInlineMessageTopLabel(for message: MessageType) -> Bool {
-        return true
+        return false
+    }
+    
+    open func messageTopLabelSafeArea(position: MessageLabelPosition, message: MessageType, at indexPath: IndexPath) -> CGFloat {
+        guard position.isInner else { return 0; }
+        
+        let dataSource = messagesLayout.messagesDataSource;
+        let labelSize = self.messageTopLabelSize(for: message, at: indexPath);
+        
+        if position == .inline, let topLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath){
+            let maxWidth = self.messageContainerMaxWidth(for: message);
+            
+            // Calculate horizontal spacing needed to avoid overlapping with
+            // message's top label.
+            let textAlignment = netMessageTopLabelAlignment(for: message);
+            let frame = topLblTxt.lastLineFrame(labelWidth: maxWidth - textAlignment.textInsets.horizontal);
+            
+            return max(labelSize.height - frame.height, 0);
+        }
+        
+        return labelSize.height;
     }
 
     // MARK: - Message time label
@@ -380,11 +401,31 @@ open class MessageSizeCalculator: CellSizeCalculator {
         let dataSource = messagesLayout.messagesDataSource
         let isFromCurrentSender = dataSource.isFromCurrentSender(message: message)
         let pos = isFromCurrentSender ? outgoingMessageBottomLabelPosition : incomingMessageBottomLabelPosition
-        return pos == .inline && !canUseInlineMessageTopLabel(for: message) ? .inner : pos
+        return pos == .inline && !canUseInlineMessageBottomLabel(for: message) ? .inner : pos
     }
     
     open func canUseInlineMessageBottomLabel(for message: MessageType) -> Bool {
-        return true
+        return false
+    }
+    
+    open func messageBottomLabelSafeArea(position: MessageLabelPosition, message: MessageType, at indexPath: IndexPath) -> CGFloat {
+        guard position.isInner else { return 0; }
+        
+        let dataSource = messagesLayout.messagesDataSource;
+        let labelSize = self.messageBottomLabelSize(for: message, at: indexPath);
+        
+        if position == .inline, let topLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath){
+            let maxWidth = self.messageContainerMaxWidth(for: message);
+            
+            // Calculate horizontal spacing needed to avoid overlapping with
+            // message's top label.
+            let textAlignment = netMessageBottomLabelAlignment(for: message);
+            let frame = topLblTxt.firstLineFrame(labelWidth: maxWidth - textAlignment.textInsets.horizontal);
+            
+            return max(labelSize.height - frame.height, 0);
+        }
+        
+        return labelSize.height;
     }
 
     // MARK: - Accessory View
@@ -438,16 +479,15 @@ open class MessageSizeCalculator: CellSizeCalculator {
         return messagesLayout.itemWidth - avatarWidth - messagePadding.horizontal - accessoryWidth - accessoryPadding.horizontal - avatarLeadingTrailingPadding
     }
     
-    open func calculateContainerSafeAreaInsets(for message: MessageType, attributes: MessagesCollectionViewLayoutAttributes) -> UIEdgeInsets {
+    open func calculateContainerSafeAreaInsets(for message: MessageType, at indexPath: IndexPath) -> UIEdgeInsets {
+        let containerInsets = messageContainerInsets(for: message);
         var insets: UIEdgeInsets = .zero;
         
-        if messageTopLabelPosition(for: message).isInner {
-            insets.top = attributes.messageTopLabelSize.height + attributes.messageContainerInsets.top;
-        }
+        let tpLblPosition = messageTopLabelPosition(for: message);
+        insets.top = messageTopLabelSafeArea(position: tpLblPosition, message: message, at: indexPath) + containerInsets.top;
         
-        if messageBottomLabelPosition(for: message).isInner {
-            insets.bottom = attributes.messageBottomLabelSize.height + attributes.messageContainerInsets.bottom;
-        }
+        let btmLblPosition = messageTopLabelPosition(for: message);
+        insets.bottom = messageBottomLabelSafeArea(position: btmLblPosition, message: message, at: indexPath) + containerInsets.bottom;
         
         return insets;
     }
@@ -501,7 +541,6 @@ extension String {
     /// Tells whether the string is of a right to left script or not.
     var isRTL: Bool {
         let txt = self.removingRegexMatches(pattern: String.nonDirectionalCharacters);
-        print("escaped text: \(txt)")
         for char in txt {
             for range in String.rtlSciriptRanges {
                 if char.isWithinUnicodeRange(from: UInt32(Int(range[0], radix: 16)!), to: UInt32(Int(range[1], radix: 16)!)) {
@@ -518,8 +557,7 @@ extension String {
             let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)
             let range = NSRange(location: 0, length: count)
             return regex.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: replaceWith)
-        } catch let err {
-            print("\(err)")
+        } catch {
             return self
         }
     }
