@@ -139,6 +139,7 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         }
         
         layout.linkPreviewMessageSizeCalculator.incomingMessageBottomLabelPosition = .inner;
+        
     }
     
     func configureMessageInputBar() {

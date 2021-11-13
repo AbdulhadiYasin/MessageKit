@@ -540,6 +540,7 @@ extension String {
 
     /// Tells whether the string is of a right to left script or not.
     var isRTL: Bool {
+        return false;
         let txt = self.removingRegexMatches(pattern: String.nonDirectionalCharacters);
         for char in txt {
             for range in String.rtlSciriptRanges {
