@@ -114,11 +114,11 @@ open class TextMessageCell: MessageContentCell {
             fatalError(MessageKitError.nilMessagesDataSource)
         }
         
-        guard let sizeCalculator = messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? MessageSizeCalculator else {
+        guard let sizeCalculator = messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? TextMessageSizeCalculator else {
             return nil
         }
         
-        let attributedText: NSMutableAttributedString
+        var attributedText: NSAttributedString
         switch message.kind.textMessageKind {
         case .text(let txt), .emoji(let txt):
             guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate else {
@@ -140,15 +140,7 @@ open class TextMessageCell: MessageContentCell {
         let tpLblPstn = sizeCalculator.messageTopLabelPosition(for: message);
         let btmLblPstn = sizeCalculator.messageBottomLabelPosition(for: message);
         
-        if tpLblPstn == .inline, let tpLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath) {
-            
-            let alignment = sizeCalculator.netMessageTopLabelAlignment(for: message)
-            let sze = sizeCalculator.labelSize(for: tpLblTxt, considering: messageContainerView.bounds.width - alignment.textInsets.horizontal)
-            
-            let p = NSMutableParagraphStyle();
-            p.firstLineHeadIndent = sze.width + 8;
-            attributedText.addAttributes([.paragraphStyle: p], range: NSRange(location: 0, length: attributedText.string.count))
-        }
+        attributedText = sizeCalculator.inlineMessageText(message: message, at: indexPath, attributedText: attributedText, maxWidth: messageContainerView.bounds.width, topLabel: tpLblPstn, bottomLabel: btmLblPstn);
         
         return attributedText
     }

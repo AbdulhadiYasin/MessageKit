@@ -67,8 +67,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         // When top/bottom labels possition is inline we can assume that it's legal
         // and makes sense to the layout.
         attributedText = self.inlineMessageText(
-            message: message, at: indexPath, attributedText: attributedText,
-            maxWidth: maxWidth, spacing: 0,
+            message: message, at: indexPath, attributedText: attributedText, maxWidth: maxWidth,
             topLabel: topLabelPosition, bottomLabel: bottomLabelPosition)
         
 
@@ -133,7 +132,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         }
     }
     
-    private func inlineMessageText(
+    internal func inlineMessageText(
         message: MessageType, at indexPath: IndexPath, attributedText: NSAttributedString, maxWidth: CGFloat, spacing: CGFloat = 8.0,
         topLabel: MessageLabelPosition, bottomLabel: MessageLabelPosition) -> NSAttributedString{
         guard topLabel == .inline || bottomLabel == .inline else { return attributedText; }
