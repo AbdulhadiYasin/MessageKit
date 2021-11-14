@@ -540,9 +540,11 @@ extension String {
 
     /// Tells whether the string is of a right to left script or not.
     var isRTL: Bool {
-        return false;
-        let txt = self.removingRegexMatches(pattern: String.nonDirectionalCharacters);
-        for char in txt {
+        //let txt = self.removingRegexMatches(pattern: String.nonDirectionalCharacters);
+        for char in self {
+            if char.isSpecialCharacter {
+                continue;
+            }
             for range in String.rtlSciriptRanges {
                 if char.isWithinUnicodeRange(from: UInt32(Int(range[0], radix: 16)!), to: UInt32(Int(range[1], radix: 16)!)) {
                     return true;
@@ -570,5 +572,11 @@ extension Character {
     func isWithinUnicodeRange(from: UInt32, to: UInt32) -> Bool {
         guard let uni = self.unicodeScalars.first?.value else { return false; }
         return from <= uni && uni <= to;
+    }
+    
+    var isSpecialCharacter: Bool {
+        // Check if the receiver is a spacial character: ~`!@#$%^&*()-_+={}[]\\/:;\"'<>,.?1234567890 \r\n\t
+        guard let u = unicodeScalars.first?.value else { return false; }
+        return u == 9 || u == 13 || (u >= 32 && u <= 64) || (u >= 91 && u <= 96) || (u >= 123 && u <= 126)
     }
 }
