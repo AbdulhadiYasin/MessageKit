@@ -240,7 +240,7 @@ extension NSMutableAttributedString {
         let p = NSMutableParagraphStyle();
         p.firstLineHeadIndent = width;
         
-        addAttributes([.paragraphStyle: p], range: NSRange(location: 0, length: string.count))
+        addAttributes([.paragraphStyle: p], range: NSRange(location: 0, length: length))
     }
     
     func addSpacing(width: CGFloat, at index: Int, height: CGFloat = 0.0001){
@@ -251,5 +251,11 @@ extension NSMutableAttributedString {
         let imageSpaceHorizontal = NSAttributedString(attachment: image5Attachment)
         
         self.insert(imageSpaceHorizontal, at: index);
+    }
+    
+    func setTextAlignment(_ textAlignment: NSTextAlignment){
+        let p = NSMutableParagraphStyle();
+        p.alignment = textAlignment;
+        addAttribute(.paragraphStyle, value: p, range: _NSRange(location: 0, length: length))
     }
 }

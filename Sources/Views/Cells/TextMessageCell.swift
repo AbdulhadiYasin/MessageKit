@@ -124,9 +124,6 @@ open class TextMessageCell: MessageContentCell {
             var attributes = [NSAttributedString.Key: Any]()
             attributes[.foregroundColor] = displayDelegate.textColor(for: message, at: indexPath, in: messagesCollectionView);
             attributes[.font] = messageLabel.messageLabelFont;
-            let pStyle = NSMutableParagraphStyle();
-            pStyle.alignment = txt.isRTL ? .right : .left;
-            attributes[.paragraphStyle] = pStyle;
             attributedText = NSAttributedString(string: txt, attributes: attributes)
             break
         case .attributedText(let attText):
@@ -143,6 +140,11 @@ open class TextMessageCell: MessageContentCell {
             message: message, at: indexPath, attributedText: attributedText,
             maxWidth: messageContainerView.bounds.width, topLabel: tpLblPstn,
             bottomLabel: btmLblPstn);
+        
+        if let mutable = attributedText as? NSMutableAttributedString {
+            print("attributedText::textAlignment");
+            mutable.setTextAlignment(mutable.string.isRTL ? .right : .left);
+        }
         
         return attributedText
     }
