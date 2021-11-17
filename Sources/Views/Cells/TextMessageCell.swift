@@ -64,6 +64,7 @@ open class TextMessageCell: MessageContentCell {
         super.prepareForReuse()
         messageLabel.attributedText = nil
         messageLabel.text = nil
+        messageLabel.textAlignment = .natural
     }
 
     open override func setupSubviews() {
@@ -91,7 +92,6 @@ open class TextMessageCell: MessageContentCell {
                 messageLabel.attributedText = text
                 messageLabel.textAlignment = text.string.isRTL ? .right : .left;
             } else {
-                messageLabel.textAlignment = .left;
                 switch textMessageKind {
                 case .text(let text), .emoji(let text):
                     let textColor = displayDelegate.textColor(for: message, at: indexPath, in: messagesCollectionView)
@@ -110,10 +110,6 @@ open class TextMessageCell: MessageContentCell {
     }
     
     private func attributedText(for message: MessageType, at indexPath: IndexPath, and messagesCollectionView: MessagesCollectionView) -> NSAttributedString? {
-        guard let dataSource = messagesCollectionView.messagesDataSource else {
-            fatalError(MessageKitError.nilMessagesDataSource)
-        }
-        
         guard let sizeCalculator = messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? TextMessageSizeCalculator else {
             return nil
         }
@@ -128,10 +124,13 @@ open class TextMessageCell: MessageContentCell {
             var attributes = [NSAttributedString.Key: Any]()
             attributes[.foregroundColor] = displayDelegate.textColor(for: message, at: indexPath, in: messagesCollectionView);
             attributes[.font] = messageLabel.messageLabelFont;
-            attributedText = NSMutableAttributedString.init(string: txt, attributes: attributes)
+            let pStyle = NSMutableParagraphStyle();
+            pStyle.alignment = txt.isRTL ? .right : .left;
+            attributes[.paragraphStyle] = pStyle;
+            attributedText = NSAttributedString(string: txt, attributes: attributes)
             break
         case .attributedText(let attText):
-            attributedText = NSMutableAttributedString(attributedString: attText)
+            attributedText = NSAttributedString(attributedString: attText)
             break
         default:
             return nil
@@ -140,7 +139,10 @@ open class TextMessageCell: MessageContentCell {
         let tpLblPstn = sizeCalculator.messageTopLabelPosition(for: message);
         let btmLblPstn = sizeCalculator.messageBottomLabelPosition(for: message);
         
-        attributedText = sizeCalculator.inlineMessageText(message: message, at: indexPath, attributedText: attributedText, maxWidth: messageContainerView.bounds.width, topLabel: tpLblPstn, bottomLabel: btmLblPstn);
+        attributedText = sizeCalculator.inlineMessageText(
+            message: message, at: indexPath, attributedText: attributedText,
+            maxWidth: messageContainerView.bounds.width, topLabel: tpLblPstn,
+            bottomLabel: btmLblPstn);
         
         return attributedText
     }
