@@ -156,7 +156,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             let textAlignment = netMessageBottomLabelAlignment(for: message);
             let frame = btmLblTxt.firstLineFrame(labelWidth: maxWidth - textAlignment.textInsets.horizontal)
             
-            attributedString.addSpacing(width: frame.width, at: attributedString.length);
+            attributedString.addSpacing(width: frame.width + spacing, at: attributedString.length);
         }
         
         return attributedString;
@@ -246,7 +246,7 @@ extension NSMutableAttributedString {
     func addSpacing(width: CGFloat, at index: Int, height: CGFloat = 0.0001){
         let image5Attachment = NSTextAttachment()
         image5Attachment.image = UIImage()
-        image5Attachment.bounds = CGRect.init(x: 0, y: -5, width: width, height: height)
+        image5Attachment.bounds = CGRect.init(x: 0, y: 0, width: width, height: height)
         // wrap the attachment in its own attributed string so we can append it
         let imageSpaceHorizontal = NSAttributedString(attachment: image5Attachment)
         

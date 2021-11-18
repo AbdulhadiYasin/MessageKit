@@ -90,7 +90,7 @@ open class TextMessageCell: MessageContentCell {
             let textMessageKind = message.kind.textMessageKind
             if let text = self.attributedText(for: message, at: indexPath, and: messagesCollectionView) {
                 messageLabel.attributedText = text
-                messageLabel.textAlignment = text.string.isRTL ? .right : .left;
+                messageLabel.textAlignment = .right;
             } else {
                 switch textMessageKind {
                 case .text(let text), .emoji(let text):
@@ -140,11 +140,6 @@ open class TextMessageCell: MessageContentCell {
             message: message, at: indexPath, attributedText: attributedText,
             maxWidth: messageContainerView.bounds.width, topLabel: tpLblPstn,
             bottomLabel: btmLblPstn);
-        
-        if let mutable = attributedText as? NSMutableAttributedString {
-            print("attributedText::textAlignment");
-            mutable.setTextAlignment(mutable.string.isRTL ? .right : .left);
-        }
         
         return attributedText
     }
