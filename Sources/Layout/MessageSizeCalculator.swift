@@ -294,6 +294,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
         return pos == .inline && !canUseInlineMessageTopLabel(for: message) ? .inner : pos
     }
     
+    /// Returns whether message cell accepts inline messageBottomLabel.
     open func canUseInlineMessageTopLabel(for message: MessageType) -> Bool {
         return false
     }
@@ -404,6 +405,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
         return pos == .inline && !canUseInlineMessageBottomLabel(for: message) ? .inner : pos
     }
     
+    /// Returns whether message cell accepts inline messageBottomLabel.
     open func canUseInlineMessageBottomLabel(for message: MessageType) -> Bool {
         return false
     }

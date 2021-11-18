@@ -116,22 +116,19 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         return netMessageTopLabelAlignment(for: message).textAlignment == (string.isRTL ? .left : .right);
     }
     
-    private func text(for message: MessageType) -> String? {
-        switch message.kind {
-        case .text(let text), .emoji(let text): return text;
-        case .attributedText(let text): return text.string;
-        case .linkPreview(let linkItem):
-            if let text = linkItem.text {
-                return text
-            } else if let attributedText = linkItem.attributedText {
-                return attributedText.string
-            }
-            return nil;
+    /// Returns text (string) value of message content (stripped of attributes if there's any).
+    open func text(for message: MessageType) -> String? {
+        switch message.kind.textMessageKind {
+        case .text(let text), .emoji(let text):
+            return text;
+        case .attributedText(let text):
+            return text.string;
         default:
             return nil
         }
     }
     
+    /// Returns message's text content adjusted for inline top/bottom message labels.
     internal func inlineMessageText(
         message: MessageType, at indexPath: IndexPath, attributedText: NSAttributedString, maxWidth: CGFloat, spacing: CGFloat = 8.0,
         topLabel: MessageLabelPosition, bottomLabel: MessageLabelPosition) -> NSAttributedString{

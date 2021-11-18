@@ -88,9 +88,10 @@ open class TextMessageCell: MessageContentCell {
                 messageLabel.setAttributes(attributes, detector: detector)
             }
             let textMessageKind = message.kind.textMessageKind
-            if let text = self.attributedText(for: message, at: indexPath, and: messagesCollectionView) {
+            let _txt = self.text(for: message);
+            if let text = self.inlineMessageText(for: message, at: indexPath, and: messagesCollectionView) {
                 messageLabel.attributedText = text
-                messageLabel.textAlignment = text.string.isRTL ? .right : .left;
+                messageLabel.textAlignment = (_txt ?? text.string).isRTL ? .right : .left;
             } else {
                 switch textMessageKind {
                 case .text(let text), .emoji(let text):
@@ -109,12 +110,25 @@ open class TextMessageCell: MessageContentCell {
         }
     }
     
-    private func attributedText(for message: MessageType, at indexPath: IndexPath, and messagesCollectionView: MessagesCollectionView) -> NSAttributedString? {
-        guard let sizeCalculator = messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? TextMessageSizeCalculator else {
+    /// Returns text (string) value of message content (stripped of attributes if there's any).
+    private func text(for message: MessageType) -> String? {
+        switch message.kind.textMessageKind {
+        case .text(let text), .emoji(let text):
+            return text;
+        case .attributedText(let text):
+            return text.string;
+        default:
             return nil
         }
-        
-        var attributedText: NSAttributedString
+    }
+    
+    /// Converts message's content into NSAttributedString instance.
+    ///
+    /// If message content is .attributedText, will be returned as is.
+    /// If message content is .text/.emoji a new NSAttributedString instance will be created with attributes of
+    /// the receiver.
+    private func attributedText(for message: MessageType, at indexPath: IndexPath,
+                                and messagesCollectionView: MessagesCollectionView) -> NSAttributedString? {
         switch message.kind.textMessageKind {
         case .text(let txt), .emoji(let txt):
             guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate else {
@@ -124,24 +138,31 @@ open class TextMessageCell: MessageContentCell {
             var attributes = [NSAttributedString.Key: Any]()
             attributes[.foregroundColor] = displayDelegate.textColor(for: message, at: indexPath, in: messagesCollectionView);
             attributes[.font] = messageLabel.messageLabelFont;
-            attributedText = NSAttributedString(string: txt, attributes: attributes)
-            break
+            return NSAttributedString(string: txt, attributes: attributes);
         case .attributedText(let attText):
-            attributedText = NSAttributedString(attributedString: attText)
-            break
+            return attText;
         default:
             return nil
+        }
+    }
+    
+    /// Returns message's text content adjusted for inline top/bottom message labels.
+    private func inlineMessageText(for message: MessageType, at indexPath: IndexPath, and messagesCollectionView: MessagesCollectionView) -> NSAttributedString? {
+        guard let sizeCalculator = messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? TextMessageSizeCalculator else {
+            return nil
+        }
+        
+        guard let attributedText = attributedText(for: message, at: indexPath, and: messagesCollectionView) else {
+            return nil;
         }
         
         let tpLblPstn = sizeCalculator.messageTopLabelPosition(for: message);
         let btmLblPstn = sizeCalculator.messageBottomLabelPosition(for: message);
         
-        attributedText = sizeCalculator.inlineMessageText(
+        return sizeCalculator.inlineMessageText(
             message: message, at: indexPath, attributedText: attributedText,
             maxWidth: messageContainerView.bounds.width, topLabel: tpLblPstn,
             bottomLabel: btmLblPstn);
-        
-        return attributedText
     }
     
     /// Used to handle the cell's contentView's tap gesture.
