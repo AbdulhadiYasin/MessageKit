@@ -113,7 +113,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             return super.canUseInlineMessageBottomLabel(for: message)
         }
         
-        return netMessageTopLabelAlignment(for: message).textAlignment == (string.isRTL ? .left : .right);
+        return netMessageBottomLabelAlignment(for: message).textAlignment == (string.isRTL ? .left : .right);
     }
     
     /// Returns text (string) value of message content (stripped of attributes if there's any).
