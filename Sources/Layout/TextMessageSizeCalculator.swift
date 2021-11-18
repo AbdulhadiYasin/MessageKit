@@ -191,7 +191,7 @@ func boundingSize(_ lhs: CGSize, _ rhs: CGSize) -> CGSize {
 
 extension NSAttributedString {
 
-    func lineFragmentUsedRect(at index: Int, labelWidth: CGFloat) -> CGRect {
+    func lineFragmentUsedRect(at index: Int, labelWidth: CGFloat, useFontHeight: Bool = true) -> CGRect {
         guard index >= 0 && index <= self.length else {
             return .zero;
         }
@@ -212,22 +212,30 @@ extension NSAttributedString {
         textContainer.maximumNumberOfLines = 0
 
         let glyphIndex = layoutManager.glyphIndexForCharacter(at: index)
-        let lineFragmentRect = layoutManager.lineFragmentUsedRect(forGlyphAt: glyphIndex,
+        var lineFragmentRect = layoutManager.lineFragmentUsedRect(forGlyphAt: glyphIndex,
                                                                       effectiveRange: nil)
         
+        if useFontHeight, let font = font(at: index){
+            lineFragmentRect.size.height = font.lineHeight;
+        }
         return lineFragmentRect
     }
     
-    func lastLineFrame(labelWidth: CGFloat) -> CGRect {
-        return self.lineFragmentUsedRect(at: self.length - 1, labelWidth: labelWidth)
+    func lastLineFrame(labelWidth: CGFloat, useFontHeight: Bool = true) -> CGRect {
+        return self.lineFragmentUsedRect(at: self.length - 1, labelWidth: labelWidth,
+                                         useFontHeight: useFontHeight)
     }
     
-    func lastLineMaxX(labelWidth: CGFloat) -> CGFloat {
-        return self.lastLineFrame(labelWidth: labelWidth).maxX
+    func lastLineMaxX(labelWidth: CGFloat, useFontHeight: Bool = true) -> CGFloat {
+        return self.lastLineFrame(labelWidth: labelWidth, useFontHeight: useFontHeight).maxX
     }
     
-    func firstLineFrame(labelWidth: CGFloat) -> CGRect {
-        return self.lineFragmentUsedRect(at: 0, labelWidth: labelWidth);
+    func firstLineFrame(labelWidth: CGFloat, useFontHeight: Bool = true) -> CGRect {
+        return self.lineFragmentUsedRect(at: 0, labelWidth: labelWidth, useFontHeight: useFontHeight);
+    }
+    
+    func font(at index: Int) -> UIFont? {
+        return attribute(.font, at: index, effectiveRange: nil) as? UIFont
     }
 }
 
@@ -245,7 +253,10 @@ extension NSMutableAttributedString {
         image5Attachment.image = UIImage()
         image5Attachment.bounds = CGRect.init(x: 0, y: 0, width: width, height: height)
         // wrap the attachment in its own attributed string so we can append it
-        let imageSpaceHorizontal = NSAttributedString(attachment: image5Attachment)
+        let imageSpaceHorizontal = NSMutableAttributedString(attachment: image5Attachment);
+        
+        let attrs = attributes(at: min(max(0, index), length - 1), effectiveRange: nil)
+        imageSpaceHorizontal.addAttributes(attrs, range: NSRange(location: 0, length: imageSpaceHorizontal.length))
         
         self.insert(imageSpaceHorizontal, at: index);
     }
