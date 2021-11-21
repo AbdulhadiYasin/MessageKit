@@ -250,7 +250,10 @@ extension NSMutableAttributedString {
     
     func addSpacing(width: CGFloat, at index: Int, height: CGFloat = 0.0001){
         let i = min(max(0, index), length - 1);
-        let _height = font(at: i)?.lineHeight ?? height
+        var _height = height;
+        if let font = font(at: i) {
+            _height = (i == self.length - 1) ? font.lineHeight : font.capHeight;
+        }
         let image5Attachment = NSTextAttachment()
         image5Attachment.image = UIImage()
         image5Attachment.bounds = CGRect.init(x: 0, y: 0, width: width, height: _height)
