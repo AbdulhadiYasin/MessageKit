@@ -142,18 +142,20 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             // Calculate horizontal spacing needed to avoid overlapping with
             // message's top label.
             let textAlignment = netMessageTopLabelAlignment(for: message);
-            let frame = topLblTxt.lastLineFrame(labelWidth: maxWidth - textAlignment.textInsets.horizontal)
+            let labelWidth = maxWidth - textAlignment.textInsets.horizontal;
+            let frame = topLblTxt.lastLineFrame(labelWidth: labelWidth)
             
-            attributedString.addSpacing(width: frame.width + spacing, at: 0);
+            attributedString.addSpacing(width: frame.width + spacing, at: 0, labelWidth: labelWidth);
         }
         
         if bottomLabel == .inline, let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath){
             // Calculate horizontal spacing needed to avoid overlapping with
             // message's bottom label.
             let textAlignment = netMessageBottomLabelAlignment(for: message);
-            let frame = btmLblTxt.firstLineFrame(labelWidth: maxWidth - textAlignment.textInsets.horizontal)
+            let labelWidth = maxWidth - textAlignment.textInsets.horizontal;
+            let frame = btmLblTxt.firstLineFrame(labelWidth: labelWidth)
             
-            attributedString.addSpacing(width: frame.width + spacing, at: attributedString.length);
+            attributedString.addSpacing(width: frame.width + spacing, at: attributedString.length, labelWidth: labelWidth);
         }
         
         return attributedString;
@@ -191,7 +193,28 @@ func boundingSize(_ lhs: CGSize, _ rhs: CGSize) -> CGSize {
 
 extension NSAttributedString {
 
-    func lineFragmentUsedRect(at index: Int, labelWidth: CGFloat, useFontHeight: Bool = true) -> CGRect {
+    
+    func layoutManager<T>(width: CGFloat, _ handler: ((NSLayoutManager, NSTextContainer)->T)) -> T {
+        
+        // Create instances of NSLayoutManager, NSTextContainer and NSTextStorage
+        let labelSize = CGSize(width: width, height: .infinity)
+        let layoutManager = NSLayoutManager()
+        let textContainer = NSTextContainer(size: labelSize)
+        let textStorage = NSTextStorage(attributedString: self)
+
+        // Configure layoutManager and textStorage
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+
+        // Configure textContainer
+        textContainer.lineFragmentPadding = 0.0
+        textContainer.lineBreakMode = .byWordWrapping
+        textContainer.maximumNumberOfLines = 0
+        
+        return handler(layoutManager, textContainer);
+    }
+    
+    func lineFragmentUsedRect(at index: Int, labelWidth: CGFloat, effectiveRange: NSRangePointer? = nil, useFontHeight: Bool = true) -> CGRect {
         guard index >= 0 && index <= self.length else {
             return .zero;
         }
@@ -212,8 +235,13 @@ extension NSAttributedString {
         textContainer.maximumNumberOfLines = 0
 
         let glyphIndex = layoutManager.glyphIndexForCharacter(at: index)
-        var lineFragmentRect = layoutManager.lineFragmentUsedRect(forGlyphAt: glyphIndex,
-                                                                      effectiveRange: nil)
+        var lineFragmentRect = layoutManager
+            .lineFragmentUsedRect(forGlyphAt: glyphIndex, effectiveRange: effectiveRange)
+        
+        if effectiveRange != nil {
+            let r = layoutManager.characterRange(forGlyphRange: effectiveRange!.pointee, actualGlyphRange: nil)
+            effectiveRange?.pointee = r;
+        }
         
         if useFontHeight, let font = font(at: index){
             lineFragmentRect.size.height = font.lineHeight;
@@ -221,21 +249,131 @@ extension NSAttributedString {
         return lineFragmentRect
     }
     
-    func lastLineFrame(labelWidth: CGFloat, useFontHeight: Bool = true) -> CGRect {
-        return self.lineFragmentUsedRect(at: self.length - 1, labelWidth: labelWidth,
-                                         useFontHeight: useFontHeight)
+    func boundingRect(forCharacterRange range: NSRange, labelWidth: CGFloat) -> CGRect? {
+        layoutManager(width: labelWidth) {
+            var glyphRange = NSRange();
+            
+            // Convert the range for glyphs.
+            $0.characterRange(forGlyphRange: range, actualGlyphRange: &glyphRange)
+            return $0.boundingRect(forGlyphRange: glyphRange, in: $1)
+        }
     }
     
-    func lastLineMaxX(labelWidth: CGFloat, useFontHeight: Bool = true) -> CGFloat {
-        return self.lastLineFrame(labelWidth: labelWidth, useFontHeight: useFontHeight).maxX
+    func origin(forCharacterAt index: Int, labelWidth: CGFloat) -> CGPoint {
+        return layoutManager(width: labelWidth) { (layout, _) in
+            return layout.location(forGlyphAt: index);
+        }
     }
     
-    func firstLineFrame(labelWidth: CGFloat, useFontHeight: Bool = true) -> CGRect {
-        return self.lineFragmentUsedRect(at: 0, labelWidth: labelWidth, useFontHeight: useFontHeight);
+    
+    
+    
+    
+    func lastLineFrame(labelWidth: CGFloat) -> CGRect {
+        return self.lineFragmentUsedRect(at: self.length - 1, labelWidth: labelWidth)
+    }
+    
+    func lastLineMaxX(labelWidth: CGFloat) -> CGFloat {
+        return self.lastLineFrame(labelWidth: labelWidth).maxX
+    }
+    
+    func firstLineFrame(labelWidth: CGFloat) -> CGRect {
+        return self.lineFragmentUsedRect(at: 0, labelWidth: labelWidth);
     }
     
     func font(at index: Int) -> UIFont? {
         return attribute(.font, at: index, effectiveRange: nil) as? UIFont
+    }
+    
+    func newLineHeight(forSpacing spacing: CGFloat, at index: Int,
+                       labelWidth: CGFloat) -> CGFloat? {
+        let i = min(max(0, index), length - 1);
+        guard let font = self.font(at: i) else { return nil; }
+        
+        if spacing >= labelWidth || self.length == 0 {
+            // Spacing will take a full line.
+            return font.lineHeight;
+        }
+        
+        var lineRange: NSRange = NSRange(location: 0, length: 1);
+        let lineWidth = lineFragmentUsedRect(at: i, labelWidth: labelWidth, effectiveRange: &lineRange).width;
+        
+        //print("lineRange: \(lineRange), substring: `\(self.substring(from: lineRange.lowerBound, to: lineRange.upperBound))`")
+        if labelWidth - lineWidth >= spacing {
+            // There's enough space within the line to include the spacing.
+            return font.capHeight;
+        }
+        
+        
+        let startRange = NSRange(location: lineRange.location, length: i - lineRange.location)
+        let startText = startRange.length > 0 ? self.attributedSubstring(from: startRange) : nil;
+        let startWidth = startText?.firstLineFrame(labelWidth: labelWidth).width ?? 0;
+        
+        
+        if lineWidth - startWidth >= spacing {
+            // Theres's enough space to add spacing in line.
+            // ...
+            
+            if startWidth > 0 {
+                return font.capHeight;
+            }
+            
+            // Adding spacing at start of line. Should check if there's text after
+            // spacing within line.
+            var endRange = NSRange(location: i, length: 0);
+            for indx in i ... lineRange.upperBound {
+                let char = self[indx];
+                if char == " " || char == "\r" || char == "\n" {
+                    break;
+                }
+                endRange.length += 1;
+            }
+            
+            let endText = self.attributedSubstring(from: endRange);
+            let endWidth = endText.firstLineFrame(labelWidth: labelWidth).width;
+            
+            if lineWidth-spacing-startWidth >= endWidth {
+                // There's enough space to add end-text after spacing.
+                return font.capHeight;
+            }
+            
+            return font.lineHeight;
+            
+        } else {
+            // Spacing should be added within a line on it's own.
+            return font.lineHeight;
+        }
+    }
+
+}
+
+extension NSAttributedString {
+    
+    subscript (i: Int) -> String {
+        return self[i ..< i + 1]
+    }
+    
+    func substring(fromIndex: Int) -> String {
+        return self[min(fromIndex, length) ..< length]
+    }
+    
+    func substring(toIndex: Int) -> String {
+        return self[0 ..< max(0, toIndex)]
+    }
+    
+    func substring(from startIndex: Int, to endIndex: Int) -> String {
+        guard let range = Range<Int>(NSRange(location: startIndex, length: endIndex-startIndex)) else {
+            return "";
+        }
+        return self[range];
+    }
+    
+    subscript (r: Range<Int>) -> String {
+        let range = Range(uncheckedBounds: (lower: max(0, min(length, r.lowerBound)),
+                                            upper: min(length, max(0, r.upperBound))))
+        let start = string.index(string.startIndex, offsetBy: range.lowerBound)
+        let end = string.index(start, offsetBy: range.upperBound - range.lowerBound)
+        return String(self.string[start ..< end])
     }
 }
 
@@ -248,14 +386,15 @@ extension NSMutableAttributedString {
         addAttributes([.paragraphStyle: p], range: NSRange(location: 0, length: length))
     }
     
-    func addSpacing(width: CGFloat, at index: Int, height: CGFloat = 0.0001){
+    func addSpacing(width: CGFloat, at index: Int, height: CGFloat? = nil, labelWidth: CGFloat? = nil){
         let i = min(max(0, index), length - 1);
-        var _height = height;
-        if let font = font(at: i) {
-            _height = (i == self.length - 1) ? font.lineHeight : font.capHeight;
+        var _height = height ?? 0.0001;
+        if height == nil, font(at: i) != nil, let labelWidth = labelWidth,
+           let h = self.newLineHeight(forSpacing: width, at: index, labelWidth: labelWidth) {
+            _height = h
         }
         let image5Attachment = NSTextAttachment()
-        image5Attachment.image = UIImage()
+        image5Attachment.image = UIImage.imageWithColor(color: UIColor.green.withAlphaComponent(0.5)) ?? UIImage();
         image5Attachment.bounds = CGRect.init(x: 0, y: 0, width: width, height: _height)
         // wrap the attachment in its own attributed string so we can append it
         let imageSpaceHorizontal = NSMutableAttributedString(attachment: image5Attachment);
@@ -270,5 +409,16 @@ extension NSMutableAttributedString {
         let p = NSMutableParagraphStyle();
         p.alignment = textAlignment;
         addAttribute(.paragraphStyle, value: p, range: _NSRange(location: 0, length: length))
+    }
+}
+
+fileprivate extension UIImage {
+    class func imageWithColor(color: UIColor, size: CGSize=CGSize(width: 1, height: 1)) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        color.setFill()
+        UIRectFill(CGRect(origin: CGPoint.zero, size: size))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
     }
 }
