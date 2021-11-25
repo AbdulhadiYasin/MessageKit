@@ -65,7 +65,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         let bottomLabelPosition = messageBottomLabelPosition(for: message);
         
         // Calculate label size before adjusting for inline message labels.
-        let lblSize = labelSize(for: attributedText, considering: maxWidth);
+        var lblSize = labelSize(for: attributedText, considering: maxWidth);
         
         // When top/bottom labels possition is inline we can assume that it's legal
         // and makes sense to the layout.
@@ -81,6 +81,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         
         messageContainerSize.width += messageInsets.horizontal + containerInsets.horizontal
         messageContainerSize.height += messageInsets.vertical + containerInsets.vertical;
+        lblSize.height += messageInsets.vertical + containerInsets.vertical;
         
         if topLabelPosition == .inline {
             // #1.0. By default a space for the top label is reserved, but container's
@@ -92,6 +93,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             // message's content at the start of the top label but with a horizontal
             // spacing to avoid overlapping.
             messageContainerSize.height -= messageTopLabelSize(for: message, at: indexPath).height
+            lblSize.height -= messageTopLabelSize(for: message, at: indexPath).height;
         }
         
         if bottomLabelPosition == .inline {
