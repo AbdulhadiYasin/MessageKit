@@ -83,7 +83,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         messageContainerSize.height += messageInsets.vertical + containerInsets.vertical;
         lblSize.height += messageInsets.vertical + containerInsets.vertical;
         
-        if topLabelPosition == .inline {
+        /*if topLabelPosition == .inline {
             // #1.0. By default a space for the top label is reserved, but container's
             // background streches underneath it to mimic thats it's contained
             // within the message container itself.
@@ -100,7 +100,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             // #2.0. Look at comment #1.0.
             messageContainerSize.height -= messageBottomLabelSize(for: message, at: indexPath).height
             messageContainerSize.height = max(messageContainerSize.height, lblSize.height);
-        }
+        }*/
 
         let minSize = messageContainerMinSize(for: message, at: indexPath)
         return CGSize(width: max(minSize.width, messageContainerSize.width), height: messageContainerSize.height)

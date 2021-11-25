@@ -47,14 +47,7 @@ open class TextMessageCell: MessageContentCell {
             messageLabel.textInsets = attributes.messageLabelInsets
             messageLabel.messageLabelFont = attributes.messageLabelFont
             
-            var safeArea = attributes.messageContainerSafeaAreaInsets
-//            if attributes.messageTopLabelPosition == .inline {
-//                safeArea.top -= attributes.messageTopLabelSize.height
-//            }
-//            if attributes.messageBottomLabelPosition == .inline {
-//                safeArea.bottom -= attributes.messageBottomLabelSize.height
-//            }
-            
+            let safeArea = attributes.messageContainerSafeaAreaInsets
             messageLabel.frame = messageContainerView.bounds.inset(by: safeArea)
             //messageLabel.frame = messageContainerView.bounds
         }

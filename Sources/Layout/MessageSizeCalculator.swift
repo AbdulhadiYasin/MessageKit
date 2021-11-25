@@ -309,7 +309,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
             let maxWidth = self.messageContainerMaxWidth(for: message);
             
             // Calculate horizontal spacing needed to avoid overlapping with
-            // message's top label.
+            // message's top label. (Only last-line should be inline).
             let textAlignment = netMessageTopLabelAlignment(for: message);
             let frame = topLblTxt.lastLineFrame(labelWidth: maxWidth - textAlignment.textInsets.horizontal);
             
