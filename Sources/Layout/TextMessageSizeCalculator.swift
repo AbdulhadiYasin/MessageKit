@@ -64,9 +64,6 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         let topLabelPosition = messageTopLabelPosition(for: message);
         let bottomLabelPosition = messageBottomLabelPosition(for: message);
         
-        // Calculate label size before adjusting for inline message labels.
-        let netLblSize = labelSize(for: attributedText, considering: maxWidth);
-        
         // When top/bottom labels possition is inline we can assume that it's legal
         // and makes sense to the layout.
         attributedText = self.inlineMessageText(
@@ -75,7 +72,6 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         
 
         messageContainerSize = labelSize(for: attributedText, considering: maxWidth)
-        let postLblSize = messageContainerSize
 
         let messageInsets = messageLabelInsets(for: message)
         let containerInsets = messageContainerInsets(for: message)
@@ -95,7 +91,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             messageContainerSize.height -= messageTopLabelSize(for: message, at: indexPath).height
         }
         
-        if bottomLabelPosition == .inline && postLblSize.height > netLblSize.height {
+        if bottomLabelPosition == .inline && attributedText.numberOfLines(with: maxWidth) > 1 {
             // #2.0. Look at comment #1.0.
             messageContainerSize.height -= messageBottomLabelSize(for: message, at: indexPath).height
         }
@@ -291,6 +287,18 @@ extension NSAttributedString {
     
     func font(at index: Int) -> UIFont? {
         return attribute(.font, at: index, effectiveRange: nil) as? UIFont
+    }
+    
+    func numberOfLines(with width: CGFloat) -> Int {
+        
+        let path = UIBezierPath(rect: CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT)))
+        let frameSetterRef : CTFramesetter = CTFramesetterCreateWithAttributedString(self as CFAttributedString)
+        let frameRef: CTFrame = CTFramesetterCreateFrame(frameSetterRef, CFRangeMake(0, 0), path.cgPath, nil)
+        
+        let linesNS: NSArray  = CTFrameGetLines(frameRef)
+        
+        guard let lines = linesNS as? [CTLine] else { return 0 }
+        return lines.count
     }
     
     func newLineHeight(forSpacing spacing: CGFloat, at index: Int,
