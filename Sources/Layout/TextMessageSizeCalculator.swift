@@ -145,7 +145,9 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             let labelWidth = maxWidth - textAlignment.textInsets.horizontal;
             let frame = topLblTxt.lastLineFrame(labelWidth: labelWidth)
             
-            attributedString.addSpacing(width: frame.width + spacing, at: 0, labelWidth: labelWidth);
+            attributedString.addSpacing(
+                width: frame.width + spacing, at: 0, height: frame.height,
+                labelWidth: labelWidth);
         }
         
         if bottomLabel == .inline, let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath){
@@ -155,7 +157,9 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             let labelWidth = maxWidth - textAlignment.textInsets.horizontal;
             let frame = btmLblTxt.firstLineFrame(labelWidth: labelWidth)
             
-            attributedString.addSpacing(width: frame.width + spacing, at: attributedString.length, labelWidth: labelWidth);
+            attributedString.addSpacing(
+                width: frame.width + spacing, at: attributedString.length,
+                height: frame.height, labelWidth: labelWidth);
         }
         
         return attributedString;
