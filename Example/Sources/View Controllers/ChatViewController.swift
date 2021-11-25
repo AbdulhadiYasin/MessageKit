@@ -111,7 +111,7 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         messagesCollectionView.messageCellDelegate = self
         
         scrollsToLastItemOnKeyboardBeginsEditing = true // default false
-        maintainPositionOnKeyboardFrameChanged = true // default false
+        maintainPositionOnKeyboardFrameChanged = true // default false 
 
         showMessageTimestampOnSwipeLeft = true // default false
         

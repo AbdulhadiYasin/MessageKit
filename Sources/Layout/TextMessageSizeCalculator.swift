@@ -65,7 +65,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         let bottomLabelPosition = messageBottomLabelPosition(for: message);
         
         // Calculate label size before adjusting for inline message labels.
-        var lblSize = labelSize(for: attributedText, considering: maxWidth);
+        let netLblSize = labelSize(for: attributedText, considering: maxWidth);
         
         // When top/bottom labels possition is inline we can assume that it's legal
         // and makes sense to the layout.
@@ -75,13 +75,13 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         
 
         messageContainerSize = labelSize(for: attributedText, considering: maxWidth)
+        let postLblSize = messageContainerSize
 
         let messageInsets = messageLabelInsets(for: message)
         let containerInsets = messageContainerInsets(for: message)
         
         messageContainerSize.width += messageInsets.horizontal + containerInsets.horizontal
         messageContainerSize.height += messageInsets.vertical + containerInsets.vertical;
-        lblSize.height += messageInsets.vertical + containerInsets.vertical;
         
         if topLabelPosition == .inline {
             // #1.0. By default a space for the top label is reserved, but container's
@@ -93,13 +93,11 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             // message's content at the start of the top label but with a horizontal
             // spacing to avoid overlapping.
             messageContainerSize.height -= messageTopLabelSize(for: message, at: indexPath).height
-            lblSize.height -= messageTopLabelSize(for: message, at: indexPath).height;
         }
         
-        if bottomLabelPosition == .inline {
+        if bottomLabelPosition == .inline && postLblSize.height > netLblSize.height {
             // #2.0. Look at comment #1.0.
             messageContainerSize.height -= messageBottomLabelSize(for: message, at: indexPath).height
-            messageContainerSize.height = max(messageContainerSize.height, lblSize.height);
         }
 
         let minSize = messageContainerMinSize(for: message, at: indexPath)
