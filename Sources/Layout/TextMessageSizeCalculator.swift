@@ -92,19 +92,21 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             messageContainerSize.height -= messageTopLabelSize(for: message, at: indexPath).height
         }
         
-        if bottomLabelPosition == .inline && attributedText.numberOfLines(with: maxWidth) > 1 {
+        if bottomLabelPosition == .inline {
             // #2.0. Look at comment #1.0.
             messageContainerSize.height -= messageBottomLabelSize(for: message, at: indexPath).height
         }
         
-        if topLabelPosition == .inline && bottomLabelPosition == .inline && attributedText.numberOfLines(with: maxWidth) == 1 {
+        let minSize = messageContainerMinSize(for: message, at: indexPath)
+        let width = max(minSize.width, messageContainerSize.width);
+        
+        if topLabelPosition == .inline && bottomLabelPosition == .inline && attributedText.numberOfLines(with: width) == 1 {
             let t = messageTopLabelSize(for: message, at: indexPath).height;
             let b = messageBottomLabelSize(for: message, at: indexPath).height;
             messageContainerSize.height = baseHeight - t - b;
         }
 
-        let minSize = messageContainerMinSize(for: message, at: indexPath)
-        return CGSize(width: max(minSize.width, messageContainerSize.width), height: messageContainerSize.height)
+        return CGSize(width: width, height: messageContainerSize.height)
     }
     
     open override func canUseInlineMessageTopLabel(for message: MessageType) -> Bool {
