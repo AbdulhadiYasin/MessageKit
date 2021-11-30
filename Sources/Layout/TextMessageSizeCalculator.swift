@@ -95,9 +95,15 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             // #2.0. Look at comment #1.0.
             messageContainerSize.height -= messageBottomLabelSize(for: message, at: indexPath).height
         }
+        
+        if topLabelPosition == .inline && bottomLabelPosition == .inline && attributedText.numberOfLines(with: maxWidth) == 1 {
+            let t = messageTopLabelSize(for: message, at: indexPath).height;
+            let b = messageBottomLabelSize(for: message, at: indexPath).height;
+            messageContainerSize.height = -1*min(t, b)
+        }
 
         let minSize = messageContainerMinSize(for: message, at: indexPath)
-        return CGSize(width: max(minSize.width, messageContainerSize.width), height: max(0, messageContainerSize.height))
+        return CGSize(width: max(minSize.width, messageContainerSize.width), height: messageContainerSize.height)
     }
     
     open override func canUseInlineMessageTopLabel(for message: MessageType) -> Bool {
