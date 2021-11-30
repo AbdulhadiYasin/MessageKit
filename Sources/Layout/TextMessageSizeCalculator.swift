@@ -153,9 +153,11 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             let textAlignment = netMessageTopLabelAlignment(for: message);
             let labelWidth = maxWidth - textAlignment.textInsets.horizontal;
             let frame = topLblTxt.lastLineFrame(labelWidth: labelWidth)
+            let _height = attributedString.newLineHeight(
+                forSpacing: frame.width+spacing, at: 0, labelWidth: labelWidth) ?? frame.height;
             
             attributedString.addSpacing(
-                width: frame.width + spacing, at: 0, height: frame.height,
+                width: frame.width + spacing, at: 0, height: min(frame.height, _height),
                 labelWidth: labelWidth);
         }
         
@@ -165,10 +167,13 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             let textAlignment = netMessageBottomLabelAlignment(for: message);
             let labelWidth = maxWidth - textAlignment.textInsets.horizontal;
             let frame = btmLblTxt.firstLineFrame(labelWidth: labelWidth)
+            let _height = attributedString.newLineHeight(
+                forSpacing: frame.width+spacing, at: attributedString.length,
+                labelWidth: labelWidth) ?? frame.height;
             
             attributedString.addSpacing(
                 width: frame.width + spacing, at: attributedString.length,
-                height: frame.height, labelWidth: labelWidth);
+                height: min(frame.height, _height), labelWidth: labelWidth);
         }
         
         return attributedString;
