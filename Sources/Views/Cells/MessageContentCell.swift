@@ -255,7 +255,7 @@ open class MessageContentCell: MessageCollectionViewCell {
                 fallthrough
             }
         default:
-            if attributes.accessoryViewSize.height > attributes.messageContainerSize.height {
+            if attributes.accessoryViewSize.height > attributes.messageContainerSize.height && attributes.messageContainerSize.height >= 0 {
                 let messageHeight = attributes.messageContainerSize.height + attributes.messageContainerPadding.vertical
                 origin.y = (attributes.size.height / 2) - (messageHeight / 2)
             } else {
