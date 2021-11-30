@@ -92,7 +92,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             messageContainerSize.height -= messageTopLabelSize(for: message, at: indexPath).height
         }
         
-        if bottomLabelPosition == .inline /*&& attributedText.numberOfLines(with: maxWidth) > 1*/ {
+        if bottomLabelPosition == .inline && attributedText.numberOfLines(with: maxWidth) > 1 {
             // #2.0. Look at comment #1.0.
             messageContainerSize.height -= messageBottomLabelSize(for: message, at: indexPath).height
         }
