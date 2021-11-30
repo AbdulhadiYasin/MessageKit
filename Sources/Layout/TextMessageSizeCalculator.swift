@@ -103,7 +103,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         if topLabelPosition == .inline && bottomLabelPosition == .inline && attributedText.numberOfLines(with: width) == 1 {
             let t = messageTopLabelSize(for: message, at: indexPath).height;
             let b = messageBottomLabelSize(for: message, at: indexPath).height;
-            messageContainerSize.height = baseHeight - t - b;
+            messageContainerSize.height = (baseHeight - t - b) + containerInsets.vertical;
         }
 
         return CGSize(width: width, height: messageContainerSize.height)
