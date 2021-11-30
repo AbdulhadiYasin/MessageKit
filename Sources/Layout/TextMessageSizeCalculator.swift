@@ -72,6 +72,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         
 
         messageContainerSize = labelSize(for: attributedText, considering: maxWidth)
+        let baseHeight = messageContainerSize.height;
 
         let messageInsets = messageLabelInsets(for: message)
         let containerInsets = messageContainerInsets(for: message)
@@ -99,7 +100,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         if topLabelPosition == .inline && bottomLabelPosition == .inline && attributedText.numberOfLines(with: maxWidth) == 1 {
             let t = messageTopLabelSize(for: message, at: indexPath).height;
             let b = messageBottomLabelSize(for: message, at: indexPath).height;
-            messageContainerSize.height = -1*min(t, b)
+            messageContainerSize.height = baseHeight - t - b;
         }
 
         let minSize = messageContainerMinSize(for: message, at: indexPath)
