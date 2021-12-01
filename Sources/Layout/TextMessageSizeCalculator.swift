@@ -139,7 +139,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
     
     /// Returns message's text content adjusted for inline top/bottom message labels.
     internal func inlineMessageText(
-        message: MessageType, at indexPath: IndexPath, attributedText: NSAttributedString, maxWidth: CGFloat, spacing: CGFloat = 8.0,
+        message: MessageType, at indexPath: IndexPath, attributedText: NSAttributedString, maxWidth: CGFloat, spacing: CGFloat? = nil,
         topLabel: MessageLabelPosition, bottomLabel: MessageLabelPosition) -> NSAttributedString{
         guard topLabel == .inline || bottomLabel == .inline else { return attributedText; }
         
@@ -147,6 +147,9 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         
         let dataSource = messagesLayout.messagesDataSource;
         if topLabel == .inline, let topLblTxt = dataSource.messageTopLabelAttributedText(for: message, at: indexPath){
+            
+            let font = topLblTxt.font(at: topLblTxt.length - 1) ?? attributedString.font(at: 0)
+            let spacing = spacing ?? (font != nil ? self.spacing(for:  font!) : 8);
             
             // Calculate horizontal spacing needed to avoid overlapping with
             // message's top label.
@@ -162,6 +165,11 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         }
         
         if bottomLabel == .inline, let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath){
+            
+            // Calculate font spacing.
+            let font = btmLblTxt.font(at: 0) ?? attributedString.font(at: attributedString.length - 1)
+            let spacing = spacing ?? (font != nil ? self.spacing(for:  font!) : 8);
+            
             // Calculate horizontal spacing needed to avoid overlapping with
             // message's bottom label.
             let textAlignment = netMessageBottomLabelAlignment(for: message);
@@ -177,6 +185,12 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         }
         
         return attributedString;
+    }
+    
+    private func spacing(for font: UIFont, maxWidth: CGFloat = .greatestFiniteMagnitude) -> CGFloat {
+        return self.labelSize(for: .init(string: " ", attributes: [
+            .font: font
+        ]), considering: maxWidth).width;
     }
     
     
