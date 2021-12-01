@@ -126,6 +126,7 @@ open class MessageContentCell: MessageCollectionViewCell {
         layoutAvatarView(with: attributes)
         layoutAccessoryView(with: attributes)
         layoutTimeLabelView(with: attributes)
+        refineInnerMessageLabels(with: attributes)
     }
 
     /// Used to configure the cell.
@@ -353,6 +354,16 @@ open class MessageContentCell: MessageCollectionViewCell {
             let origin = CGPoint(x: 0, y: y)
             
             messageBottomLabel.frame = CGRect(origin: origin, size: attributes.messageBottomLabelSize)
+        }
+    }
+    
+    open func refineInnerMessageLabels(with attributes: MessagesCollectionViewLayoutAttributes){
+        if attributes.messageTopLabelPosition.isInner {
+            self.messageTopLabel.frame.origin.y += attributes.messageContainerInsets.top;
+        }
+        
+        if attributes.messageBottomLabelPosition.isInner {
+            self.messageBottomLabel.frame.origin.y -= attributes.messageContainerInsets.bottom;
         }
     }
 

@@ -135,7 +135,8 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
             ($0 as? TextMessageSizeCalculator)?.incomingMessageLabelInsets = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 14)
             ($0 as? TextMessageSizeCalculator)?.outgoingMessageLabelInsets = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 18)
             
-            $0.outgoingMessageContainerInsets = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+            $0.outgoingMessageContainerInsets = UIEdgeInsets(top: 6, left: 0, bottom: 6, right: 0)
+            $0.incomingMessageContainerInsets = UIEdgeInsets(top: 6, left: 0, bottom: 6, right: 0)
         }
         
         layout.linkPreviewMessageSizeCalculator.incomingMessageBottomLabelPosition = .inner;
@@ -206,7 +207,7 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
     func messageTopLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
         let name = message.sender.displayName
         var font: UIFont? = nil;
-        if let sizeCalc = messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? TextMessageSizeCalculator {
+        if messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) is TextMessageSizeCalculator {
             font = UIFont.systemFont(ofSize: UIFont.buttonFontSize, weight: .medium)// sizeCalc.messageLabelFont
         }
         return NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: font ?? UIFont.preferredFont(forTextStyle: .caption1)])
@@ -220,6 +221,8 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
     func textCell(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UICollectionViewCell? {
         return nil
     }
+    
+    
 }
 
 // MARK: - MessageCellDelegate
