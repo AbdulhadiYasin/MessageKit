@@ -135,7 +135,7 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
 @objc public enum MessageLabelPosition: Int {
     
     /// Place message label outside of message's bubble bounds.
-    case outter
+    case outter = 0
     /// Place message label within message's bubble bounds.
     case inner
     /// Place message label within message's bubble bounds and inline without message's body (if possible)

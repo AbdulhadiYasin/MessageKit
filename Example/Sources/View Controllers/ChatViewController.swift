@@ -119,16 +119,16 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         
         let layout = messagesCollectionView.messagesCollectionViewFlowLayout
         
-        layout.setMessageIncomingTopLabelPosition(.inline);
+        layout.setMessageIncomingTopLabelPosition(.inner);
         layout.setMessageIncomingMessageTopLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
-        layout.setMessageIncomingBottomLabelPosition(.inline);
+        layout.setMessageIncomingBottomLabelPosition(.outter);
         layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
-        layout.setMessageOutgoingTopLabelPosition(.inline);
+        layout.setMessageOutgoingTopLabelPosition(.outter);
         layout.setMessageOutgoingMessageTopLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 14, bottom: 0, right: 18)))
         
-        layout.setMessageOutgoingBottomLabelPosition(.inline);
+        layout.setMessageOutgoingBottomLabelPosition(.outter);
         layout.setMessageOutgoingMessageBottomLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 14, bottom: 0, right: 18)))
         
         layout.messageSizeCalculators().forEach {
@@ -205,20 +205,34 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
     }
 
     func messageTopLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
-        let name = message.sender.displayName
-        var font: UIFont? = nil;
-        if let sizeCalc = messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? TextMessageSizeCalculator {
-            font = sizeCalc.messageLabelFont
-        } else {
-            font = UIFont.systemFont(ofSize: UIFont.buttonFontSize, weight: .medium)
+        guard let sizeCalc = messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? MessageSizeCalculator else {
+            return nil;
         }
         
-        return NSAttributedString(string: name, attributes: [NSAttributedString.Key.font: font ?? UIFont.preferredFont(forTextStyle: .caption1)])
+        let name = message.sender.displayName
+        if sizeCalc.messageTopLabelPosition(for: message) == .inline {
+            var font: UIFont? = nil;
+            if let sizeCalc = sizeCalc as? TextMessageSizeCalculator {
+                font = sizeCalc.messageLabelFont.bolder ?? sizeCalc.messageLabelFont;
+            } else {
+                font = UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .medium)
+            }
+            
+            return NSAttributedString(string: name, attributes: [
+                .font: font ?? UIFont.preferredFont(forTextStyle: .caption1)
+            ])
+        } else {
+            return NSAttributedString(string: name, attributes: [
+                .font: UIFont.preferredFont(forTextStyle: .caption1)
+            ])
+        }
     }
 
     func messageBottomLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
         let dateString = formatter.string(from: message.sentDate)
-        return NSAttributedString(string: dateString, attributes: [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption2)])
+        return NSAttributedString(string: dateString, attributes: [
+            .font: UIFont.preferredFont(forTextStyle: .caption2)
+        ])
     }
     
     func textCell(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UICollectionViewCell? {
@@ -390,4 +404,143 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
             }
         }
     }
+}
+
+
+
+extension UIFont.Weight {
+    static var allCases: [UIFont.Weight] {
+        return [.ultraLight, .thin, .light, .regular, .medium, .semibold, .bold, .heavy, .black];
+    }
+    
+    var stringValue: String {
+        switch self {
+        case .ultraLight: return "ultraLight";
+        case .thin: return "thin";
+        case .light: return "light";
+        case .regular: return "regular";
+        case .medium: return "medium";
+        case .semibold: return "semiBold";
+        case .bold: return "bold";
+        case .heavy: return "heavy";
+        case .black: return "black";
+        default: return "undefined";
+        }
+    }
+    
+    func matches(weightOfFontWithName name: String) -> Bool {
+        let name = name.lowercased();
+        if self == .ultraLight && name.contains("ultra") && name.contains("light") {
+            return true;
+        } else if self == .semibold && name.contains("semi") && name.contains("bold") {
+            return true;
+        } else if name.contains(stringValue.lowercased()) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    static func weight(forFontWithName name: String) -> UIFont.Weight? {
+        let weights = self.allCases;
+        for weight in weights {
+            if weight.matches(weightOfFontWithName: name){
+                return weight;
+            }
+        }
+        
+        return nil;
+    }
+}
+extension UIFont {
+    
+    func font(ofWeight weight: UIFont.Weight) -> UIFont? {
+        let fontNames = UIFont.fontNames(forFamilyName: familyName);
+        var selected: [String] = [];
+        for name in fontNames {
+            if weight.matches(weightOfFontWithName: name){
+                selected.append(name);
+            }
+        }
+        
+        if selected.isEmpty && fontNames.count == 1 {
+            selected = fontNames;
+        } else if weight == .regular && selected.isEmpty {
+            var weights = UIFont.Weight.allCases;
+            weights.removeAll { $0 == .regular }
+            
+            for name in fontNames {
+                if weights.compactMap({ $0.matches(weightOfFontWithName: name) ? true : nil }).isEmpty {
+                    selected.append(name);
+                    break;
+                }
+            }
+        }
+        
+        let isItalic = fontName.lowercased().contains("italic");
+        for name in selected {
+            if name.lowercased().contains("italic") == isItalic {
+                return UIFont(name: name, size: self.pointSize);
+            }
+        }
+        
+        if selected.count >= 1 {
+            return UIFont(name: selected.first!, size: self.pointSize);
+        }
+        return nil;
+    }
+    
+    var bolder: UIFont? {
+        guard let weight = UIFont.Weight.weight(forFontWithName: self.fontName) else {
+            return nil;
+        }
+        
+        return font(bolderThan: weight);
+    }
+    
+    var lighter: UIFont? {
+        guard let weight = UIFont.Weight.weight(forFontWithName: self.fontName) else {
+            return nil;
+        }
+        
+        return font(lighterThan: weight);
+    }
+    
+    func font(bolderThan weight: UIFont.Weight) -> UIFont? {
+        let weights = UIFont.Weight.allCases;
+        guard let i = weights.firstIndex(of: weight) else { return nil; }
+        
+        for indx in (i + 1) ..< weights.count {
+            if let font = self.font(ofWeight: weights[indx]){
+                return font;
+            }
+        }
+        
+        return nil;
+    }
+    
+    func font(lighterThan weight: UIFont.Weight) -> UIFont? {
+        let weights = UIFont.Weight.allCases;
+        guard let i = weights.firstIndex(of: weight) else { return nil; }
+        
+        for indx in 0 ..< i {
+            let _indx = i - indx - 1
+            if let font = self.font(ofWeight: weights[_indx]){
+                return font;
+            }
+        }
+        
+        return nil;
+    }
+    
+//    func font(ofWeight weight: UIFont.Weight) -> UIFont? {
+//        let familyName = familyName.lowercased();
+//        let fontName = fontName.lowercased()
+//        var weight: UIFont.Weight = .regular;
+//
+//        let weights = UIFont.Weight.allCases;
+//        for weight in weights {
+//            if fontName.contains(<#T##element: Character##Character#>)
+//        }
+//    }
 }

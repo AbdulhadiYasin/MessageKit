@@ -416,13 +416,13 @@ open class MessageSizeCalculator: CellSizeCalculator {
         let dataSource = messagesLayout.messagesDataSource;
         let labelSize = self.messageBottomLabelSize(for: message, at: indexPath);
         
-        if position == .inline, let topLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath){
+        if position == .inline, let btmLblTxt = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath){
             let maxWidth = self.messageContainerMaxWidth(for: message);
             
             // Calculate horizontal spacing needed to avoid overlapping with
             // message's top label.
             let textAlignment = netMessageBottomLabelAlignment(for: message);
-            let frame = topLblTxt.firstLineFrame(labelWidth: maxWidth - textAlignment.textInsets.horizontal);
+            let frame = btmLblTxt.firstLineFrame(labelWidth: maxWidth - textAlignment.textInsets.horizontal);
             
             return max(labelSize.height - frame.height, 0);
         }
@@ -488,7 +488,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
         let tpLblPosition = messageTopLabelPosition(for: message);
         insets.top = messageTopLabelSafeArea(position: tpLblPosition, message: message, at: indexPath) + containerInsets.top;
         
-        let btmLblPosition = messageTopLabelPosition(for: message);
+        let btmLblPosition = messageBottomLabelPosition(for: message);
         insets.bottom = messageBottomLabelSafeArea(position: btmLblPosition, message: message, at: indexPath) + containerInsets.bottom;
         
         return insets;
