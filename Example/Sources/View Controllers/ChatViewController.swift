@@ -132,11 +132,11 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         layout.setMessageOutgoingMessageBottomLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 14, bottom: 0, right: 18)))
         
         layout.messageSizeCalculators().forEach {
-            ($0 as? TextMessageSizeCalculator)?.incomingMessageLabelInsets = UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 14)
-            ($0 as? TextMessageSizeCalculator)?.outgoingMessageLabelInsets = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 18)
+            ($0 as? TextMessageSizeCalculator)?.incomingMessageLabelInsets = .zero//UIEdgeInsets(top: 0, left: 18, bottom: 0, right: 14)
+            ($0 as? TextMessageSizeCalculator)?.outgoingMessageLabelInsets = .zero//UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 18)
             
-            $0.outgoingMessageContainerInsets = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
-            $0.incomingMessageContainerInsets = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
+            $0.incomingMessageContainerInsets = UIEdgeInsets(top: 4, left: 18, bottom: 4, right: 14)
+            $0.outgoingMessageContainerInsets = UIEdgeInsets(top: 4, left: 14, bottom: 4, right: 18)
         }
         
         layout.linkPreviewMessageSizeCalculator.incomingMessageBottomLabelPosition = .inner;

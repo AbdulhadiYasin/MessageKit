@@ -491,6 +491,9 @@ open class MessageSizeCalculator: CellSizeCalculator {
         let btmLblPosition = messageBottomLabelPosition(for: message);
         insets.bottom = messageBottomLabelSafeArea(position: btmLblPosition, message: message, at: indexPath) + containerInsets.bottom;
         
+        insets.left = containerInsets.left;
+        insets.right = containerInsets.right;
+        
         return insets;
     }
 
