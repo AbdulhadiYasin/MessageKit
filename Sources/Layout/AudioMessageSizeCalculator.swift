@@ -32,11 +32,11 @@ open class AudioMessageSizeCalculator: MessageSizeCalculator {
         case .audio(let item):
             let maxWidth = messageContainerMaxWidth(for: message)
             if maxWidth < item.size.width {
-                // Maintain the ratio if width is too great
+                // Maintain the ratio if width is too grebat
                 let height = maxWidth * item.size.height / item.size.width
-                return CGSize(width: maxWidth, height: height)
+                return CGSize(width: maxWidth, height: height).inset(by: messageContainerInsets(for: message))
             }
-            return item.size
+            return item.size.inset(by: messageContainerInsets(for: message))
         default:
             fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
         }

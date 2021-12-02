@@ -119,16 +119,16 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         
         let layout = messagesCollectionView.messagesCollectionViewFlowLayout
         
-        layout.setMessageIncomingTopLabelPosition(.inner);
+        layout.setMessageIncomingTopLabelPosition(.inline);
         layout.setMessageIncomingMessageTopLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
-        layout.setMessageIncomingBottomLabelPosition(.outter);
+        layout.setMessageIncomingBottomLabelPosition(.inline);
         layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
-        layout.setMessageOutgoingTopLabelPosition(.outter);
+        layout.setMessageOutgoingTopLabelPosition(.inline);
         layout.setMessageOutgoingMessageTopLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 14, bottom: 0, right: 18)))
         
-        layout.setMessageOutgoingBottomLabelPosition(.outter);
+        layout.setMessageOutgoingBottomLabelPosition(.inline);
         layout.setMessageOutgoingMessageBottomLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 14, bottom: 0, right: 18)))
         
         layout.messageSizeCalculators().forEach {
@@ -205,7 +205,11 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
     }
 
     func messageTopLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
-        guard let sizeCalc = messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? MessageSizeCalculator else {
+        return NSAttributedString(string: message.sender.displayName, attributes: [
+            .font: UIFont.preferredFont(forTextStyle: .caption1)
+        ])
+        
+        /*guard let sizeCalc = messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? MessageSizeCalculator else {
             return nil;
         }
         
@@ -225,7 +229,7 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
             return NSAttributedString(string: name, attributes: [
                 .font: UIFont.preferredFont(forTextStyle: .caption1)
             ])
-        }
+        }*/
     }
 
     func messageBottomLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
