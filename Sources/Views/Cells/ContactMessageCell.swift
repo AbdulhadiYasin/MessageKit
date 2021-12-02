@@ -112,6 +112,7 @@ open class ContactMessageCell: MessageContentCell {
         super.configure(with: message, at: indexPath, and: messagesCollectionView)
         // setup data
         guard case let .contact(contactItem) = message.kind else { fatalError("Failed decorate audio cell") }
+        let safeArea = (messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? MessageSizeCalculator)?.calculateContainerSafeAreaInsets(for: message, at: indexPath) ?? .zero;
         nameLabel.text = contactItem.displayName
         initialsLabel.text = contactItem.initials
         // setup constraints
@@ -125,11 +126,11 @@ open class ContactMessageCell: MessageContentCell {
             return constraint.identifier == ConstraintsID.disclosureRightConstraint.rawValue
         }.first
         if dataSource.isFromCurrentSender(message: message) { // outgoing message
-            initialsContainerLeftConstraint?.constant = 5
-            disclosureRightConstraint?.constant = -10
+            initialsContainerLeftConstraint?.constant = 5 + safeArea.right
+            disclosureRightConstraint?.constant = -10 - safeArea.left
         } else { // incoming message
-            initialsContainerLeftConstraint?.constant = 10
-            disclosureRightConstraint?.constant = -5
+            initialsContainerLeftConstraint?.constant = 10 + safeArea.left
+            disclosureRightConstraint?.constant = -5 - safeArea.right
         }
         // setup colors
         guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate else {
