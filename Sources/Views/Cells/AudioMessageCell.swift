@@ -120,16 +120,18 @@ open class AudioMessageCell: MessageContentCell {
         guard let dataSource = messagesCollectionView.messagesDataSource else {
             fatalError(MessageKitError.nilMessagesDataSource)
         }
+        
+        let safeArea = (messagesCollectionView.messagesCollectionViewFlowLayout.cellSizeCalculatorForItem(at: indexPath) as? MessageSizeCalculator)?.calculateContainerSafeAreaInsets(for: message, at: indexPath) ?? .zero;
 
         let playButtonLeftConstraint = messageContainerView.constraints.filter { $0.identifier == "left" }.first
         let durationLabelRightConstraint = messageContainerView.constraints.filter { $0.identifier == "right" }.first
 
         if !dataSource.isFromCurrentSender(message: message) {
-            playButtonLeftConstraint?.constant = 12
-            durationLabelRightConstraint?.constant = -8
+            playButtonLeftConstraint?.constant = 12 + safeArea.left
+            durationLabelRightConstraint?.constant = -8 - safeArea.right
         } else {
-            playButtonLeftConstraint?.constant = 5
-            durationLabelRightConstraint?.constant = -15
+            playButtonLeftConstraint?.constant = 5 + safeArea.left
+            durationLabelRightConstraint?.constant = -15 - safeArea.right
         }
 
         guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate else {
