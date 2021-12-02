@@ -119,13 +119,13 @@ class ChatViewController: MessagesViewController, MessagesDataSource {
         
         let layout = messagesCollectionView.messagesCollectionViewFlowLayout
         
-        layout.setMessageIncomingTopLabelPosition(.inline);
+        layout.setMessageIncomingTopLabelPosition(.inner);
         layout.setMessageIncomingMessageTopLabelAlignment(.init(textAlignment: .left, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
         layout.setMessageIncomingBottomLabelPosition(.inline);
         layout.setMessageIncomingMessageBottomLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 18, bottom: 0, right: 14)))
         
-        layout.setMessageOutgoingTopLabelPosition(.inline);
+        layout.setMessageOutgoingTopLabelPosition(.inner);
         layout.setMessageOutgoingMessageTopLabelAlignment(.init(textAlignment: .right, textInsets: .init(top: 0, left: 14, bottom: 0, right: 18)))
         
         layout.setMessageOutgoingBottomLabelPosition(.inline);
