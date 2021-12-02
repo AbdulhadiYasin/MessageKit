@@ -168,7 +168,7 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
             
             // Calculate font spacing.
             let font = btmLblTxt.font(at: 0) ?? attributedString.font(at: attributedString.length - 1)
-            let spacing = spacing ?? (font != nil ? self.spacing(for:  font!) : 8);
+            let spacing = spacing ?? (font != nil ? self.spacing(for:  font!)*3 : 4);
             
             // Calculate horizontal spacing needed to avoid overlapping with
             // message's bottom label.
